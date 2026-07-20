@@ -1,667 +1,337 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>Dashboard Monitoring Outlet</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#F5F3EE;
-    --surface:#FFFFFF;
-    --surface-alt:#FBFAF6;
-    --ink:#181B20;
-    --ink-soft:#6B7280;
-    --ink-faint:#9AA0A8;
-    --line:#E6E2D6;
-    --line-strong:#D8D3C4;
-    --accent:#B4802F;
-    --accent-ink:#7A5620;
-    --accent-bg:#F3E7CE;
-    --safe:#2E8B57;
-    --safe-bg:#E3F3EA;
-    --safe-line:#BFE2CC;
-    --risk:#C98A16;
-    --risk-bg:#FBF0D8;
-    --risk-line:#F0D89A;
-    --unsafe:#C1443B;
-    --unsafe-bg:#FBE7E4;
-    --unsafe-line:#F0C1BB;
-    --radius:14px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'IBM Plex Sans',sans-serif;
-    font-variant-numeric:tabular-nums;
-    -webkit-font-smoothing:antialiased;
-    padding:28px;
-  }
-  .disp{font-family:'Barlow Condensed',sans-serif; letter-spacing:0.01em;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
+Pasted text(1).txt
+Document
+Berikan dan tunjukkan bagian mana rumus" untuk menampilkan data" di dashboardnyaa
 
-  header.top{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    flex-wrap:wrap; gap:16px;
-    margin-bottom:22px;
-    padding-bottom:18px;
-    border-bottom:2px solid var(--line-strong);
-  }
-  .brand-eyebrow{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-    color:var(--accent-ink); font-weight:600; margin-bottom:4px;
-  }
-  h1.title{
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:800; font-size:34px; margin:0; line-height:1;
-    letter-spacing:0.01em;
-  }
-  .filters{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-  .field{display:flex; flex-direction:column; gap:4px;}
-  .field label{
-    font-size:10.5px; text-transform:uppercase; letter-spacing:0.09em;
-    color:var(--ink-faint); font-weight:600;
-  }
-  select{
-    appearance:none;
-    background:var(--surface) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path d="M0 0L5 7L10 0Z" fill="%236B7280"/></svg>') no-repeat right 12px center;
-    border:1.5px solid var(--line-strong);
-    border-radius:9px;
-    padding:9px 34px 9px 13px;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:13.5px; font-weight:600; color:var(--ink);
-    min-width:170px; cursor:pointer;
-  }
-  select:focus{outline:2px solid var(--accent); outline-offset:1px;}
+Dari kode yang kamu kirim, tidak ada rumus (formula) seperti di Google Sheets. Dashboard ini dibuat menggunakan JavaScript, sehingga "rumus untuk menampilkan data" berupa fungsi-fungsi JavaScript yang mengambil data, menghitung, lalu menampilkannya ke HTML.
 
-  .date-picker-wrap{position:relative;}
-  .date-btn{
-    appearance:none;
-    background:var(--surface) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path d="M0 0L5 7L10 0Z" fill="%236B7280"/></svg>') no-repeat right 12px center;
-    border:1.5px solid var(--line-strong);
-    border-radius:9px;
-    padding:9px 34px 9px 13px;
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:13.5px; font-weight:600; color:var(--ink);
-    min-width:170px; cursor:pointer; text-align:left;
-  }
-  .date-btn:focus{outline:2px solid var(--accent); outline-offset:1px;}
-  .cal-popup{
-    position:absolute; top:calc(100% + 6px); left:0; z-index:80;
-    background:var(--surface); border:1px solid var(--line-strong); border-radius:12px;
-    box-shadow:0 10px 30px rgba(24,27,32,0.14);
-    padding:12px; width:250px; display:none;
-  }
-  .cal-popup.open{display:block;}
-  .cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
-  .cal-header button{
-    background:none; border:none; cursor:pointer; font-size:16px; color:var(--ink-soft);
-    padding:3px 9px; border-radius:6px; font-weight:700;
-  }
-  .cal-header button:hover{background:var(--surface-alt); color:var(--ink);}
-  .cal-title{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;}
-  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px;}
-  .cal-dow{font-size:10px; color:var(--ink-faint); text-align:center; font-weight:700; padding:4px 0;}
-  .cal-day{
-    font-size:12px; text-align:center; padding:7px 0; border-radius:50%;
-    cursor:pointer; color:var(--ink);
-  }
-  .cal-day:hover{background:var(--accent-bg);}
-  .cal-day.disabled{color:var(--line-strong); cursor:not-allowed; pointer-events:none;}
-  .cal-day.other-month{color:var(--ink-faint); opacity:0.35; pointer-events:none;}
-  .cal-day.selected{background:var(--ink); color:#fff; font-weight:700;}
-  .cal-day.today:not(.selected){outline:1.5px solid var(--accent); outline-offset:-1.5px;}
+Berikut bagian-bagian yang berfungsi sebagai "rumus menampilkan data":
 
-  .grid-top{display:grid; grid-template-columns:1.15fr 1.4fr; gap:16px; margin-bottom:16px;}
-  @media (max-width:980px){.grid-top{grid-template-columns:1fr;}}
-  .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:20px 22px;
-  }
-  .card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
-  .card-head h2{
-    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:19px;
-    margin:0; letter-spacing:0.01em;
-  }
-  .card-head .sub{font-size:12px; color:var(--ink-soft);}
+1. Menampilkan data Hero (Capaian Omset)
 
-  .hero{display:flex; gap:22px; align-items:center;}
-  .gauge-wrap{position:relative; width:196px; flex:none;}
-  .gauge-num{
-    position:absolute; left:0; right:0; top:108px; text-align:center;
-  }
-  .gauge-num .pct{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:40px; line-height:1;}
-  .gauge-num .lbl{font-size:11px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;}
-  .hero-stats{flex:1; display:flex; flex-direction:column; gap:10px;}
-  .hero-stat-row{
-    display:flex; align-items:baseline; justify-content:space-between;
-    padding:9px 0; border-bottom:1px dashed var(--line);
-  }
-  .hero-stat-row:last-child{border-bottom:none;}
-  .hero-stat-row .k{font-size:12.5px; color:var(--ink-soft); font-weight:500;}
-  .hero-stat-row .v{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:21px;}
-  .v.pos{color:var(--safe);}
-  .v.neg{color:var(--unsafe);}
-  .status-pill{
-    display:inline-flex; align-items:center; gap:6px;
-    padding:4px 11px; border-radius:99px; font-size:12px; font-weight:700;
-    text-transform:uppercase; letter-spacing:0.04em;
-  }
-  .status-pill.safe{background:var(--safe-bg); color:var(--safe);}
-  .status-pill.risk{background:var(--risk-bg); color:var(--risk);}
-  .status-pill.unsafe{background:var(--unsafe-bg); color:var(--unsafe);}
-  .status-pill .dot{width:7px; height:7px; border-radius:50%; background:currentColor;}
+Fungsinya berada di:
 
-  .kpi-mini-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
-  @media (max-width:820px){.kpi-mini-row{grid-template-columns:repeat(2,1fr);}}
-  .kpi-mini{
-    background:var(--surface); border:1px solid var(--line); border-radius:12px;
-    padding:14px 16px;
-  }
-  .kpi-mini .lbl{font-size:11px; text-transform:uppercase; letter-spacing:0.07em; color:var(--ink-faint); font-weight:600;}
-  .kpi-mini .val{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:24px; margin-top:4px;}
-  .kpi-mini .foot{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
+function renderHero(rows){
 
-  .status-board{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px;}
-  @media (max-width:900px){.status-board{grid-template-columns:1fr;}}
-  .status-col{
-    background:var(--surface-alt); border:1px solid var(--line); border-radius:var(--radius);
-    padding:14px 14px 8px;
-  }
-  .status-col-head{
-    display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
-    padding-bottom:10px; border-bottom:2px solid;
-  }
-  .status-col.safe .status-col-head{border-color:var(--safe-line); color:var(--safe);}
-  .status-col.risk .status-col-head{border-color:var(--risk-line); color:var(--risk);}
-  .status-col.unsafe .status-col-head{border-color:var(--unsafe-line); color:var(--unsafe);}
-  .status-col-head .name{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:17px; color:var(--ink);}
-  .status-col-head .count{
-    font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px;
-  }
-  .outlet-row{
-    background:var(--surface); border:1px solid var(--line); border-radius:9px;
-    padding:9px 11px; margin-bottom:8px; cursor:default; transition:box-shadow .15s;
-  }
-  .outlet-row.highlight{outline:2px solid var(--accent); outline-offset:1px;}
-  .outlet-row .top-line{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
-  .outlet-row .oname{font-weight:600; font-size:13px;}
-  .outlet-row .opct{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px;}
-  .gauge-bar{
-    position:relative; height:7px; border-radius:99px; background:var(--line);
-    overflow:hidden;
-  }
-  .gauge-bar .zones{position:absolute; inset:0; display:flex;}
-  .gauge-bar .zones div:nth-child(1){background:var(--unsafe-bg); flex:80;}
-  .gauge-bar .zones div:nth-child(2){background:var(--risk-bg); flex:15;}
-  .gauge-bar .zones div:nth-child(3){background:var(--safe-bg); flex:45;}
-  .gauge-bar .marker{
-    position:absolute; top:-2.5px; width:3px; height:12px; border-radius:2px;
-    background:var(--ink); transform:translateX(-1.5px);
-  }
-  .outlet-row .rp-line{display:flex; justify-content:space-between; margin-top:5px; font-size:11px; color:var(--ink-soft);}
+Di dalamnya terdapat perhitungan:
 
-  .rank-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px 20px;}
-  .tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;}
-  .tab{
-    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:12.5px;
-    padding:8px 15px; border-radius:99px; border:1.5px solid var(--line-strong);
-    background:var(--surface); color:var(--ink-soft); cursor:pointer;
-  }
-  .tab.active{background:var(--ink); border-color:var(--ink); color:#fff;}
-  .rank-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
-  @media (max-width:820px){.rank-grid{grid-template-columns:1fr;}}
-  .rank-col-title{
-    display:flex; align-items:center; gap:7px; margin-bottom:10px;
-    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;
-    text-transform:uppercase; letter-spacing:0.04em;
-  }
-  .rank-col-title.top{color:var(--safe);}
-  .rank-col-title.bottom{color:var(--unsafe);}
-  .rank-item{
-    display:grid; grid-template-columns:22px 1fr 74px; align-items:center; gap:10px;
-    padding:8px 0; border-bottom:1px solid var(--line);
-  }
-  .rank-item:last-child{border-bottom:none;}
-  .rank-item .rnum{
-    font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; color:var(--ink-faint);
-  }
-  .rank-item.highlight{background:var(--accent-bg); border-radius:8px; padding-left:6px; margin-left:-6px;}
-  .rank-item .rname{font-size:13px; font-weight:600;}
-  .rank-item .rbar-wrap{height:6px; background:var(--line); border-radius:99px; margin-top:5px; overflow:hidden;}
-  .rank-item .rbar{height:100%; border-radius:99px;}
-  .rank-col.top .rbar{background:var(--safe);}
-  .rank-col.bottom .rbar{background:var(--unsafe);}
-  .rank-item .rval{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14.5px; text-align:right;}
-  .rank-item .rsub{font-size:10.5px; color:var(--ink-soft); text-align:right;}
+target = rows.reduce((s,r)=>s+r.targetOmset,0);
+real = rows.reduce((s,r)=>s+r.realOmset,0);
 
-  .legend{display:flex; gap:16px; align-items:center; font-size:11.5px; color:var(--ink-soft); margin-top:6px; flex-wrap:wrap;}
-  .legend span{display:inline-flex; align-items:center; gap:5px;}
-  .legend i{width:9px; height:9px; border-radius:2px; display:inline-block;}
+Menghitung total target dan realisasi.
 
-  footer.note{margin-top:20px; font-size:11.5px; color:var(--ink-faint); text-align:center;}
+Kemudian:
 
-  .sync-status{
-    display:flex; align-items:center; gap:8px;
-    font-size:12px; color:var(--ink-soft); margin-bottom:16px;
-  }
-  .sync-dot{width:8px; height:8px; border-radius:50%; background:var(--ink-faint); flex:none;}
-  .sync-dot.ok{background:var(--safe);}
-  .sync-dot.err{background:var(--unsafe);}
-  .sync-dot.loading{background:var(--risk); animation:pulse 1s infinite;}
-  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
-</style>
-</head>
-<body>
+const p = pct(real,target);
 
-<header class="top">
-  <div>
-    <div class="brand-eyebrow">Retail Ops · Live Monitoring</div>
-    <h1 class="title">Dashboard Pencapaian Outlet</h1>
-  </div>
-  <div class="filters">
-    <div class="field">
-      <label for="dateStartBtn">Tanggal Mulai</label>
-      <div class="date-picker-wrap">
-        <button type="button" class="date-btn" id="dateStartBtn"></button>
-        <div class="cal-popup" id="calStart"></div>
-      </div>
-    </div>
-    <div class="field">
-      <label for="dateEndBtn">Tanggal Selesai</label>
-      <div class="date-picker-wrap">
-        <button type="button" class="date-btn" id="dateEndBtn"></button>
-        <div class="cal-popup" id="calEnd"></div>
-      </div>
-    </div>
-    <div class="field">
-      <label for="areaSel">Area</label>
-      <select id="areaSel"></select>
-    </div>
-    <div class="field">
-      <label for="outletSel">Outlet</label>
-      <select id="outletSel"></select>
-    </div>
-  </div>
-</header>
+Menghitung
 
-<div class="sync-status" id="syncStatus">
-  <span id="syncDot" class="sync-dot"></span>
-  <span id="syncText">Memuat data…</span>
+Persentase = Realisasi / Target × 100
+
+Lalu ditampilkan ke dashboard:
+
+document.getElementById('stTarget').textContent = fmtRp(target);
+
+document.getElementById('stReal').textContent = fmtRp(real);
+
+document.getElementById('gaugePct').textContent = p.toFixed(1)+"%";
+
+Jadi bagian ini yang mengisi:
+
+Target Omset
+Realisasi
+%
+Sisa Target
+Status
+2. Menampilkan KPI Mini
+
+Bagian:
+
+function renderMiniKpis(rows){
+
+Perhitungan:
+
+const t = scope.reduce((s,r)=>s+r[m.t],0);
+
+const r = scope.reduce((s,r)=>s+r[m.r],0);
+
+const p = pct(r,t);
+
+Lalu ditampilkan:
+
+div.innerHTML = `
+<div class="lbl">${m.label}</div>
+<div class="val">${fmtNum(r,m.unit)}</div>
+<div class="foot">
+Target ${fmtNum(t,m.unit)}
+· ${p.toFixed(0)}%
 </div>
+`;
 
-<section class="grid-top">
-  <div class="card">
-    <div class="card-head">
-      <h2>Capaian Omset</h2>
-      <span class="sub" id="heroSub">Semua outlet</span>
-    </div>
-    <div class="hero">
-      <div class="gauge-wrap">
-        <svg id="gaugeSvg" width="196" height="118" viewBox="0 0 196 118"></svg>
-        <div class="gauge-num">
-          <div class="pct" id="gaugePct">0%</div>
-          <div class="lbl">Pencapaian</div>
-        </div>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat-row"><span class="k">Target Omset</span><span class="v" id="stTarget">-</span></div>
-        <div class="hero-stat-row"><span class="k">Realisasi Omset</span><span class="v" id="stReal">-</span></div>
-        <div class="hero-stat-row"><span class="k">Sisa Target</span><span class="v neg" id="stSisa">-</span></div>
-        <div class="hero-stat-row"><span class="k">Status</span><span id="stStatus"></span></div>
-      </div>
-    </div>
-  </div>
+Bagian ini menghasilkan kartu:
 
-  <div class="card">
-    <div class="card-head">
-      <h2>Ringkasan Metrik Lain</h2>
-      <span class="sub" id="miniKpiSub">Rata-rata / total pada tanggal terpilih</span>
-    </div>
-    <div class="kpi-mini-row" id="miniKpis"></div>
-  </div>
-</section>
+Basket Size
+Ogura
+Bundling
+Member
+3. Menampilkan Status Board
 
-<div class="legend" style="margin:0 0 10px 2px;">
-  <span><i style="background:var(--safe)"></i>Aman ≥ 95%</span>
-  <span><i style="background:var(--risk)"></i>Waspada 80–94%</span>
-  <span><i style="background:var(--unsafe)"></i>Tidak Aman &lt; 80%</span>
-</div>
+Bagian:
 
-<section class="status-board" id="statusBoard"></section>
+function renderStatusBoard(rows){
 
-<section class="rank-card">
-  <div class="card-head">
-    <h2>Ranking Outlet</h2>
-    <span class="sub">Top 5 &amp; Bottom 5 berdasarkan % pencapaian</span>
-  </div>
-  <div class="tabs" id="tabs"></div>
-  <div class="rank-grid">
-    <div class="rank-col top">
-      <div class="rank-col-title top">▲ Top 5</div>
-      <div id="rankTop"></div>
-    </div>
-    <div class="rank-col bottom">
-      <div class="rank-col-title bottom">▼ Bottom 5</div>
-      <div id="rankBottom"></div>
-    </div>
-  </div>
-</section>
+Menghitung status setiap outlet
 
-<footer class="note">Mockup konsep — seluruh angka adalah data dummy untuk ilustrasi tata letak, bukan data aktual.</footer>
+const p = pct(r.realOmset, r.targetOmset);
 
-<script>
-const AREA_MAP = {
-  "Area 1": ["Nusa Indah","UMY","Godean","Tajem","Jakal UII","Merbabu","Rajawali","Magelang","Muntilan","Temanggung"],
-  "Area 2": ["Makam Haji","UMS","Jebres","Laweyan","Nusukan","Boyolali","Karanganyar","Sukoharjo","Sragen"],
-  "Area 3": ["Unnes","UNDIP","Gajah Raya","UNIMUS","UDINUS","Sampangan","UKSW","Ambarawa","Ngaliyan"],
-};
-let OUTLET_AREA = {};
-Object.entries(AREA_MAP).forEach(([area, list])=>{
-  list.forEach(o=> OUTLET_AREA[o] = area);
-});
-function getAreaOfOutlet(outlet){ return OUTLET_AREA[outlet] || "Tanpa Area"; }
+Kemudian
 
-let OUTLETS = Object.values(AREA_MAP).flat();
-let DATES = ["2026-07-11","2026-07-12","2026-07-13"];
+groups[getStatus(r,p).key].push(...)
 
-function mulberry32(seed){
-  return function(){
-    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return h;}
-function genFactor(rng, lo, hi){ return lo + rng()*(hi-lo); }
+Mengelompokkan outlet menjadi
 
-let DATA = {};
-function buildDummyData(){
-  const d = {};
-  DATES.forEach(date=>{
-    d[date] = OUTLETS.map((name,i)=>{
-    const rng = mulberry32(hashStr(date+name)+i*97);
-    const targetOmset = Math.round(genFactor(rng,80,155))*1_000_000;
-    const realOmset = Math.round(targetOmset*genFactor(rng,0.62,1.18));
-    const targetBasket = Math.round(genFactor(rng,45,78))*1000;
-    const realBasket = Math.round(targetBasket*genFactor(rng,0.75,1.22));
-    const targetOgura = Math.round(genFactor(rng,180,520));
-    const realOgura = Math.round(targetOgura*genFactor(rng,0.55,1.35));
-    const targetBundling = Math.round(genFactor(rng,4,16))*1_000_000;
-    const realBundling = Math.round(targetBundling*genFactor(rng,0.6,1.28));
-    const targetMember = Math.round(genFactor(rng,28,85));
-    const realMember = Math.round(targetMember*genFactor(rng,0.55,1.3));
-    return {outlet:name, targetOmset, realOmset, targetBasket, realBasket,
-      targetOgura, realOgura, targetBundling, realBundling, targetMember, realMember};
-    });
-  });
-  return d;
-}
-DATA = buildDummyData();
+Aman
+Waspada
+Tidak Aman
 
-const METRICS = {
-  omset:   {label:"Omset",       unit:"rp",  t:"targetOmset",    r:"realOmset"},
-  basket:  {label:"Basket Size", unit:"rp",  t:"targetBasket",   r:"realBasket"},
-  ogura:   {label:"Ogura",       unit:"pcs", t:"targetOgura",    r:"realOgura"},
-  bundling:{label:"Bundling",    unit:"rp",  t:"targetBundling", r:"realBundling"},
-  member:  {label:"Member",      unit:"org", t:"targetMember",   r:"realMember"},
-};
+Lalu ditampilkan dengan
 
-const fmtRp = n => "Rp " + Math.round(n).toLocaleString('id-ID');
-const fmtNum = (n,unit) => unit==="rp" ? fmtRp(n) : Math.round(n).toLocaleString('id-ID')+" "+unit;
-const pct = (r,t) => t===0 ? 0 : (r/t*100);
-function statusOf(p){
-  if(p>=95) return {key:"safe", label:"Aman"};
-  if(p>=80) return {key:"risk", label:"Waspada"};
-  return {key:"unsafe", label:"Tidak Aman"};
-}
-const STATUS_LABELS = {safe:"Aman", risk:"Waspada", unsafe:"Tidak Aman"};
-function getStatus(row, p){
-  if(row && row.statusOverride) return {key:row.statusOverride, label:STATUS_LABELS[row.statusOverride]};
-  return statusOf(p);
+row.innerHTML = `
+...
+`
+4. Menampilkan Ranking
+
+Bagian
+
+function renderRanking(){
+
+Perhitungan ranking
+
+const withPct = rows.map(r=>({
+    outlet:r.outlet,
+    t:r[m.t],
+    r:r[m.r],
+    p:pct(r[m.r],r[m.t])
+}));
+
+Kemudian
+
+const sorted = [...withPct].sort((a,b)=>b.p-a.p);
+
+Mengurutkan dari terbesar ke terkecil.
+
+Lalu
+
+const top5 = sorted.slice(0,5);
+
+const bottom5 = sorted.slice(-5).reverse();
+
+Menampilkan Top 5 dan Bottom 5.
+
+5. Rumus Persentase
+
+Semua dashboard menggunakan fungsi ini
+
+function pct(r,t){
+    return t===0 ? 0 : (r/t*100);
 }
 
-let state = {dateStart: DATES[0], dateEnd: DATES[DATES.length-1], area: "ALL", outlet: "ALL"};
+Artinya
 
-/* ================= DATE PICKER (KALENDER CUSTOM) ================= */
-const dateStartBtn = document.getElementById('dateStartBtn');
-const dateEndBtn = document.getElementById('dateEndBtn');
-const calStartEl = document.getElementById('calStart');
-const calEndEl = document.getElementById('calEnd');
+Persentase =
+Realisasi
+────────────── ×100
+Target
 
-let calStartView = new Date();
-let calEndView = new Date();
+Semua widget memakai fungsi ini.
 
-const MONTH_NAMES = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const DOW_NAMES = ['M','S','S','R','K','J','S'];
+6. Menampilkan Data dari Spreadsheet
 
-function ymd(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+Bagian paling penting adalah
 
-function dateLabel(d){
-  const dd = new Date(d);
-  return isNaN(dd) ? d : dd.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+async function syncFromSpreadsheet()
+
+Di sini dashboard mengambil data CSV dari Spreadsheet.
+
+const text = await res.text();
+
+const rows = parseCSV(text);
+
+rebuildFromRows(rows);
+
+Alurnya:
+
+Spreadsheet
+      ↓
+CSV
+      ↓
+parseCSV()
+      ↓
+rebuildFromRows()
+      ↓
+render()
+7. Fungsi yang Memanggil Semua Tampilan
+
+Inilah "master" yang menampilkan seluruh dashboard:
+
+function render(){
+
+    const rows = currentRows();
+
+    renderHero(rows);
+
+    renderMiniKpis(rows);
+
+    renderStatusBoard(rows);
+
+    renderRanking();
+
 }
 
-function updateDateButtons(){
-  dateStartBtn.textContent = dateLabel(state.dateStart);
-  dateEndBtn.textContent = dateLabel(state.dateEnd);
-}
+Artinya ketika filter tanggal, area, atau outlet berubah, fungsi ini akan dijalankan kembali untuk memperbarui seluruh tampilan.
 
-function renderCalendar(containerId, viewDate, selectedStr, onPick){
-  const container = document.getElementById(containerId);
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const startWeekday = firstDay.getDay();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const daysInPrevMonth = new Date(year, month, 0).getDate();
-  const todayStr = new Date().toISOString().slice(0,10);
+Ringkasan lokasi "rumus menampilkan data"
+Fungsi	Menampilkan
+renderHero()	Gauge, Target, Realisasi, Sisa Target, Status
+renderMiniKpis()	KPI Basket, Ogura, Bundling, Member
+renderStatusBoard()	Daftar outlet Aman/Waspada/Tidak Aman
+renderRanking()	Top 5 & Bottom 5
+pct()	Rumus persentase pencapaian
+currentRows()	Mengolah data sesuai filter tanggal
+syncFromSpreadsheet()	Mengambil data dari Google Spreadsheet
+render()	Memanggil seluruh fungsi agar dashboard tampil
 
-  let cells = '';
-  for(let i=0;i<startWeekday;i++){
-    const d = daysInPrevMonth - startWeekday + 1 + i;
-    cells += `<div class="cal-day other-month">${d}</div>`;
-  }
-  for(let d=1; d<=daysInMonth; d++){
-    const dateStr = ymd(year, month, d);
-    const exists = DATES.includes(dateStr);
-    let cls = 'cal-day';
-    if(!exists) cls += ' disabled';
-    if(dateStr === selectedStr) cls += ' selected';
-    if(dateStr === todayStr) cls += ' today';
-    cells += `<div class="${cls}" data-date="${dateStr}">${d}</div>`;
-  }
-  const totalCells = startWeekday + daysInMonth;
-  const remainder = (7 - (totalCells % 7)) % 7;
-  for(let d=1; d<=remainder; d++){
-    cells += `<div class="cal-day other-month">${d}</div>`;
-  }
+Jadi, tidak ada satu rumus tunggal yang menampilkan data. Mekanismenya adalah:
 
-  container.innerHTML = `
-    <div class="cal-header">
-      <button type="button" class="cal-prev">‹</button>
-      <span class="cal-title">${MONTH_NAMES[month]} ${year}</span>
-      <button type="button" class="cal-next">›</button>
-    </div>
-    <div class="cal-grid">
-      ${DOW_NAMES.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
-      ${cells}
-    </div>
-  `;
-  container.querySelector('.cal-prev').addEventListener('click', (e)=>{
-    e.stopPropagation();
-    viewDate.setMonth(viewDate.getMonth()-1);
-    renderCalendar(containerId, viewDate, selectedStr, onPick);
-  });
-  container.querySelector('.cal-next').addEventListener('click', (e)=>{
-    e.stopPropagation();
-    viewDate.setMonth(viewDate.getMonth()+1);
-    renderCalendar(containerId, viewDate, selectedStr, onPick);
-  });
-  container.querySelectorAll('.cal-day[data-date]').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      onPick(el.getAttribute('data-date'));
-    });
-  });
-}
+syncFromSpreadsheet() mengambil data dari Google Sheets.
+currentRows() mengolah data berdasarkan filter.
+render() memanggil renderHero(), renderMiniKpis(), renderStatusBoard(), dan renderRanking() untuk menampilkan seluruh isi dashboard.
+Terget capaian omset itu darimana hitungan dan angkanya 
 
-function closeAllCalendars(){
-  calStartEl.classList.remove('open');
-  calEndEl.classList.remove('open');
-}
+Ya, konsepnya tetap sama, hanya definisi Target Omset yang sedikit berubah.
 
-function openCalendar(which){
-  const wasOpen = (which==='start' ? calStartEl : calEndEl).classList.contains('open');
-  closeAllCalendars();
-  if(wasOpen) return;
+Saat ini, berdasarkan kode yang ada, dashboard melakukan:
 
-  if(which==='start'){
-    calStartView = new Date(state.dateStart);
-    renderCalendar('calStart', calStartView, state.dateStart, (picked)=>{
-      state.dateStart = picked;
-      if(state.dateStart > state.dateEnd) state.dateEnd = state.dateStart;
-      updateDateButtons();
-      closeAllCalendars();
-      render();
-    });
-    calStartEl.classList.add('open');
-  } else {
-    calEndView = new Date(state.dateEnd);
-    renderCalendar('calEnd', calEndView, state.dateEnd, (picked)=>{
-      state.dateEnd = picked;
-      if(state.dateEnd < state.dateStart) state.dateStart = state.dateEnd;
-      updateDateButtons();
-      closeAllCalendars();
-      render();
-    });
-    calEndEl.classList.add('open');
-  }
-}
+Target Omset = jumlah targetOmset pada data yang berada dalam rentang tanggal yang dipilih.
 
-dateStartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('start'); });
-dateEndBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('end'); });
-document.addEventListener('click', closeAllCalendars);
+Misalnya memilih 11–15 Juli, maka target yang dijumlahkan hanya target tanggal 11–15 Juli.
 
-const areaSel = document.getElementById('areaSel');
-function fillAreaSelect(){
-  const areas = new Set();
-  OUTLETS.forEach(o=> areas.add(getAreaOfOutlet(o)));
-  const sorted = Array.from(areas).sort((a,b)=> a.localeCompare(b,'id',{numeric:true}));
-  areaSel.innerHTML='';
-  const optAll = document.createElement('option');
-  optAll.value='ALL'; optAll.textContent='Semua Area';
-  areaSel.appendChild(optAll);
-  sorted.forEach(a=>{
-    const opt=document.createElement('option'); opt.value=a; opt.textContent=a;
-    areaSel.appendChild(opt);
-  });
-  if(!sorted.includes(state.area)) state.area='ALL';
-  areaSel.value = state.area;
-}
-areaSel.addEventListener('change', ()=>{
-  state.area = areaSel.value;
-  state.outlet = 'ALL';
-  fillOutletSelect();
-  render();
-});
+Kalau yang kamu inginkan adalah:
 
-const outletSel = document.getElementById('outletSel');
-function fillOutletSelect(){
-  outletSel.innerHTML='';
-  const optAll = document.createElement('option');
-  optAll.value="ALL"; optAll.textContent="Semua Outlet";
-  outletSel.appendChild(optAll);
-  const filtered = state.area==='ALL' ? OUTLETS : OUTLETS.filter(o=> getAreaOfOutlet(o)===state.area);
-  filtered.forEach(o=>{
-    const opt=document.createElement('option'); opt.value=o; opt.textContent=o;
-    outletSel.appendChild(opt);
-  });
-  if(state.outlet!=='ALL' && !filtered.includes(state.outlet)) state.outlet='ALL';
-  outletSel.value = state.outlet;
-}
-updateDateButtons();
-fillAreaSelect();
-fillOutletSelect();
-outletSel.addEventListener('change', ()=>{state.outlet=outletSel.value; render();});
+Sisa Target = Target Bulan − Realisasi pada rentang tanggal yang dipilih
 
-function drawGauge(p){
-  const svg = document.getElementById('gaugeSvg');
-  const cx=98, cy=104, r=84;
-  const clamp = Math.max(0, Math.min(130, p));
-  const maxVal = 130;
-  const angle = (clamp/maxVal)*180;
-  const unsafeEnd = (80/maxVal)*180;
-  const riskEnd = (95/maxVal)*180;
-  function arcPath(a0,a1,rad){
-    const p0 = polar(a0,rad), p1 = polar(a1,rad);
-    const largeArc = (a1-a0) > 180 ? 1 : 0;
-    return `M ${p0[0]} ${p0[1]} A ${rad} ${rad} 0 ${largeArc} 1 ${p1[0]} ${p1[1]}`;
-  }
-  function polar(deg,rad){
-    const rad2 = (180-deg)*Math.PI/180;
-    return [cx - rad*Math.cos(rad2), cy - rad*Math.sin(rad2)];
-  }
-  const needleTip = polar(angle, r-14);
+maka alurnya menjadi seperti ini.
 
-  svg.innerHTML = `
-    <path d="${arcPath(0,unsafeEnd,r)}" stroke="var(--unsafe-bg)" stroke-width="16" fill="none" stroke-linecap="butt"/>
-    <path d="${arcPath(unsafeEnd,riskEnd,r)}" stroke="var(--risk-bg)" stroke-width="16" fill="none"/>
-    <path d="${arcPath(riskEnd,180,r)}" stroke="var(--safe-bg)" stroke-width="16" fill="none"/>
-    <path d="${arcPath(0,unsafeEnd,r)}" stroke="var(--unsafe)" stroke-width="3" fill="none" stroke-dasharray="1 1000"/>
-    <line x1="${cx}" y1="${cy}" x2="${needleTip[0]}" y2="${needleTip[1]}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="${cx}" cy="${cy}" r="6" fill="var(--ink)"/>
-  `;
-}
+Misalnya dipilih:
 
-const SUM_FIELDS = ['targetOmset','realOmset','targetOgura','realOgura','targetBundling','realBundling','targetMember','realMember'];
-const AVG_FIELDS = ['targetBasket','realBasket'];
+Bulan Juli 2026
+Rentang tanggal 1–15 Juli
+Outlet Nusa Indah
 
-function datesInRange(){
-  return DATES.filter(d => d >= state.dateStart && d <= state.dateEnd).sort();
-}
+Data:
 
-function currentRows(){
-  const range = datesInRange();
-  if(range.length === 0) return [];
-  if(range.length === 1){
-    return DATA[range[0]] || [];
-  }
-  const acc = {};
-  OUTLETS.forEach(o=>{
-    const base = {outlet:o, statusOverride:undefined, _days:0};
-    SUM_FIELDS.forEach(f=> base[f]=0);
-    AVG_FIELDS.forEach(f=> base[f]=0);
-    acc[o] = base;
-  });
-  range.forEach(d=>{
-    (DATA[d]||[]).forEach(r=>{
-      const s = acc[r.outlet];
-      if(!s) return;
-SUM_FIELDS.forEach(f=>{
+Keterangan	Nilai
+Target Juli Nusa Indah	Rp150.000.000
+Realisasi 1–15 Juli	Rp65.000.000
 
-    if(f==="targetOmset"){
-        s[f]=r[f]||0;
-    }else{
-        s[f]+=r[f]||0;
-    }
+Maka dashboard menampilkan:
 
-});
-      AVG_FIELDS.forEach(f=> s[f] += (r[f]||0));
-      s._days++;
-    });
-  });
-  return Object.values(acc).filter(s=>s._days>0).map(s=>{
-    AVG_FIELDS.forEach(f=> s[f] = Math.round(s[f]/s._days));
-    return s;
-  });
-}
+Target Omset = Rp150.000.000 (target bulan penuh)
+Realisasi Omset = Rp65.000.000 (sesuai rentang tanggal)
+Sisa Target = Rp85.000.000
+
+Persentasenya menjadi
+
+65.000.000
+150.000.000
+×
+100
+=
+43
+,
+3
+%
+150.000.000
+65.000.000
+	​
+
+×100=43,3%
+Kalau Area = Area 1
+
+Misalnya target bulan seluruh Area 1:
+
+Outlet	Target Juli
+Nusa Indah	150 jt
+UMY	120 jt
+Godean	100 jt
+
+Target Area 1
+
+= 150 + 120 + 100
+
+= 370 jt
+
+Kalau realisasi tanggal 1–15 Juli baru 165 jt
+
+maka
+
+Target = 370 jt
+Realisasi = 165 jt
+Sisa = 205 jt
+Kalau Outlet = Nusa Indah
+
+Tetap sama konsepnya.
+
+Yang berubah hanya objek yang dihitung.
+
+Target bulan:
+
+Nusa Indah = 150 jt
+
+Realisasi sesuai filter tanggal:
+
+1–15 Juli = 65 jt
+
+Maka
+
+Sisa Target
+
+150 jt
+-
+
+65 jt
+
+=
+
+85 jt
+
+Jadi tidak ada perubahan logika karena memilih outlet. Perbedaannya hanya:
+
+Jika Semua Outlet/Area, target bulan adalah total target semua outlet yang masuk filter.
+Jika memilih Nusa Indah, target bulan hanya target milik Nusa Indah.
+Menurut saya, ini justru lebih tepat untuk dashboard monitoring.
+
+Karena pengguna biasanya ingin melihat:
+
+"Dari target bulan Juli sebesar Rp150 juta, sampai tanggal 15 Juli sudah tercapai berapa dan masih kurang berapa?"
+
+bukan
+
+"Dari target tanggal 1–15 Juli..."
+
+Sehingga Target Omset tetap target bulan, sedangkan Realisasi dan Sisa Target mengikuti rentang tanggal yang dipilih. Dengan begitu, angka "Sisa Target" benar-benar menunjukkan berapa target bulan yang masih harus dicapai hingga akhir bulan.
+
+Okey saya harus ubah bagian mana? 
+Pasted text(2).txt
+Document
+Bisakah perbaiki sintaks ini 
+Pasted text(3).txt
+Document
+
+Bisa. Dari file yang kamu upload, bagian yang perlu diubah memang renderHero() dan perlu ditambah satu fungsi baru.
+
+1. Tambahkan fungsi baru setelah currentRows()
+
+Letakkan tepat setelah fungsi currentRows().
 
 function currentMonthRows(){
   const month = state.dateStart.slice(0,7); // contoh: 2026-07
@@ -679,72 +349,54 @@ function currentMonthRows(){
 
     (DATA[date]||[]).forEach(r=>{
       const s = acc[r.outlet];
-SUM_FIELDS.forEach(f=>{
-
-    if(f==="targetOmset"){
-        s[f] = r[f] || 0;
-    }else{
+      SUM_FIELDS.forEach(f=>{
         s[f] += (r[f] || 0);
-    }
-
-});
+      });
     });
   });
 
   return Object.values(acc);
 }
-  
-function periodLabel(){
-  const range = datesInRange();
-  if(range.length===0) return "Tidak ada data pada rentang ini";
-  if(range.length===1) return dateLabel(range[0]);
-  return `${dateLabel(range[0])} – ${dateLabel(range[range.length-1])} (${range.length} hari)`;
-}
+2. Ganti seluruh isi renderHero()
 
-function render(){
-  const rows = currentRows();
-  renderHero(rows);
-  renderMiniKpis(rows);
-  renderStatusBoard(rows);
-  renderRanking();
-}
+Yang sekarang masih seperti ini:
 
 function renderHero(rows){
-const monthRows = currentMonthRows();
-  const range = datesInRange();
+   ...
+}
 
-const totalHariBulan = new Date(
-  Number(state.dateStart.slice(0,4)),
-  Number(state.dateStart.slice(5,7)),
-  0
-).getDate();
+ganti menjadi:
 
-const hariDipilih = range.length;
-console.log(rows);
-let targetBulanan = 0;
+function renderHero(rows){
 
-if(state.outlet==="ALL"){
+  const monthRows = currentMonthRows();
 
-    targetBulanan = monthRows.reduce((s,r)=>s+r.targetOmset,0);
+  let target = 0;
+  let real = 0;
+  let label = "";
+  let row = null;
 
-    target = targetBulanan / totalHariBulan * hariDipilih;
+  if(state.outlet==="ALL"){
+
+    target = monthRows.reduce((s,r)=>s+r.targetOmset,0);
 
     real = rows.reduce((s,r)=>s+r.realOmset,0);
 
-}else{
+    label = "Semua outlet ("+rows.length+") · "+periodLabel();
 
-    row = rows.find(r=>r.outlet===state.outlet);
+  }else{
 
     const monthRow = monthRows.find(r=>r.outlet===state.outlet);
 
-    targetBulanan = monthRow ? monthRow.targetOmset : 0;
+    row = rows.find(r=>r.outlet===state.outlet);
 
-    target = targetBulanan / totalHariBulan * hariDipilih;
+    target = monthRow ? monthRow.targetOmset : 0;
 
     real = row ? row.realOmset : 0;
 
-}
-  const sisa = Math.max(0,targetBulanan-real);
+    label = "Outlet "+state.outlet+" · "+periodLabel();
+
+  }
 
   const p = pct(real,target);
   const st = getStatus(row,p);
@@ -755,6 +407,8 @@ if(state.outlet==="ALL"){
 
   document.getElementById('stTarget').textContent = fmtRp(target);
   document.getElementById('stReal').textContent = fmtRp(real);
+
+  const sisa = Math.max(0,target-real);
 
   document.getElementById('stSisa').textContent =
       sisa>0 ? fmtRp(sisa) : "Tercapai";
@@ -769,335 +423,330 @@ if(state.outlet==="ALL"){
 
   drawGauge(p);
 }
-function renderMiniKpis(rows){
-  const wrap = document.getElementById('miniKpis');
-  wrap.innerHTML='';
-  const subEl = document.getElementById('miniKpiSub');
-  if(subEl) subEl.textContent = (datesInRange().length>1 ? "Total / rata-rata pada periode " : "Pada tanggal ") + periodLabel();
-  const scope = state.outlet==="ALL" ? rows : rows.filter(r=>r.outlet===state.outlet);
-  Object.entries(METRICS).forEach(([key,m])=>{
-    if(key==="omset") return;
-    const t = scope.reduce((s,r)=>s+r[m.t],0);
-    const r = scope.reduce((s,r)=>s+r[m.r],0);
-    const p = pct(r,t);
-    const div = document.createElement('div');
-    div.className='kpi-mini';
-    div.innerHTML = `
-      <div class="lbl">${m.label}</div>
-      <div class="val">${fmtNum(r,m.unit)}</div>
-      <div class="foot">Target ${fmtNum(t,m.unit)} · ${p.toFixed(0)}% pencapaian</div>
-    `;
-    wrap.appendChild(div);
-  });
+Hasilnya nanti
+
+Misalnya:
+
+Bulan = Juli
+Rentang tanggal = 1–15 Juli
+Outlet = Nusa Indah
+
+Maka dashboard akan menampilkan:
+
+Target → Total target 1–31 Juli untuk Nusa Indah.
+Realisasi → Total realisasi 1–15 Juli.
+Sisa Target → Target Juli − Realisasi 1–15 Juli.
+Persentase → Realisasi 1–15 Juli ÷ Target Juli.
+Tetapi ada satu hal penting ⚠️
+
+Saya melihat pada fungsi currentMonthRows() di atas saya menggunakan:
+
+const month = state.dateStart.slice(0,7);
+
+Artinya target bulan akan selalu mengikuti bulan dari Tanggal Mulai.
+
+Kalau pengguna memilih rentang seperti:
+
+25 Juli – 5 Agustus
+
+maka target yang dihitung hanya bulan Juli, sedangkan realisasi mencakup Juli + Agustus, sehingga hasilnya menjadi tidak konsisten.
+
+Kalau dashboard memang hanya boleh memilih rentang dalam satu bulan (misalnya 1–31 Juli), solusi di atas sudah tepat. Namun kalau dashboard bisa memilih rentang lintas bulan, logikanya perlu disesuaikan agar target dan realisasi tetap sebanding.
+
+currentrows itu ada 3disini,, nah yangmana 
+
+Nah, itu yang perlu dipastikan. Jangan diubah dulu.
+
+Kalau di file ada 3 currentRows(), kemungkinan:
+
+Ada yang masih versi lama (tidak dipakai).
+Ada yang berada di objek/class berbeda.
+Atau memang nama sama tetapi fungsi berbeda.
+
+Supaya saya tidak menyuruhmu mengubah yang salah, tolong kirim salah satu dari berikut ini:
+
+Screenshot hasil pencarian currentRows (Ctrl+Shift+F atau Ctrl+F) yang memperlihatkan ketiga hasilnya.
+Atau salin ketiga potongan kode function currentRows(...) beserta 5–10 baris sebelum dan sesudahnya.
+
+Dengan begitu saya bisa bilang secara spesifik, misalnya:
+
+Ubah currentRows() yang berada sekitar baris 850, jangan yang di baris 120 atau 1630.
+
+Jadi kita tidak salah mengubah fungsi yang dipakai dashboard.
+
+Berikan sintaks perbaikan yang lengkapnya saja 
+
+Saya belum bisa memberikan sintaks lengkap yang benar karena saya tidak lagi memiliki isi file yang kamu upload. Di chat ini file yang sebelumnya kamu kirim sudah tidak dapat saya akses, sehingga saya tidak tahu:
+
+currentRows() yang mana yang dipakai.
+Struktur DATA, state, SUM_FIELDS, dan renderHero() yang terbaru.
+Apakah ada perubahan lain pada file sejak upload sebelumnya.
+
+Kalau saya menuliskan sintaks lengkap sekarang, sangat berisiko tidak sesuai dengan file milikmu dan justru membuat dashboard error.
+
+Yang paling cepat
+
+Silakan upload lagi file HTML/JS dashboard (atau tempel seluruh file jika ukurannya tidak terlalu besar). Setelah itu saya akan:
+
+✅ Mengembalikan kode lengkap yang sudah diperbaiki (bukan potongan).
+✅ Menunjukkan baris mana yang diganti.
+✅ Memastikan berjalan untuk:
+Semua Outlet
+Area
+Outlet (misalnya Nusa Indah)
+✅ Target = target bulan penuh
+✅ Realisasi = sesuai rentang tanggal
+✅ Sisa Target = Target Bulan − Realisasi
+✅ Persentase = Realisasi ÷ Target Bulan
+
+Saya akan memberikan kode yang tinggal copy–paste, tanpa perlu kamu menggabungkan sendiri.
+
+Chats with attachments paused
+You’ve used all your messages with Instant until tomorrow at 1:49 AM. Upgrade to keep working with files and images here, or start a new chat to continue with a lower quality model.
+New chat
+Upgrade
+
+Targetnya itu target based on tanggal yang dipilih, tapi untuk sisa pake target sebulan
+
+<!DOCTYPE html>
+
+<html lang="id"> <head> <meta charset="UTF-8"> <title>Dashboard Monitoring Outlet</title> <link rel="preconnect" href="https://fonts.googleapis.com"> <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"> <style> :root{ --bg:#F5F3EE; --surface:#FFFFFF; --surface-alt:#FBFAF6; --ink:#181B20; --ink-soft:#6B7280; --ink-faint:#9AA0A8; --line:#E6E2D6; --line-strong:#D8D3C4; --accent:#B4802F; --accent-ink:#7A5620; --accent-bg:#F3E7CE; --safe:#2E8B57; --safe-bg:#E3F3EA; --safe-line:#BFE2CC; --risk:#C98A16; --risk-bg:#FBF0D8; --risk-line:#F0D89A; --unsafe:#C1443B; --unsafe-bg:#FBE7E4; --unsafe-line:#F0C1BB; --radius:14px; } *{box-sizing:border-box;} html,body{margin:0;padding:0;} body{ background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',sans-serif; font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased; padding:28px; } .disp{font-family:'Barlow Condensed',sans-serif; letter-spacing:0.01em;} .mono{font-family:'IBM Plex Mono',monospace;}
+
+header.top{
+display; align-items; justify-content;
+flex-wrap; gap:16px;
+margin-bottom:22px;
+padding-bottom:18px;
+border-bottom:2px solid var(--line-strong);
 }
-
-function renderStatusBoard(rows){
-  const board = document.getElementById('statusBoard');
-  board.innerHTML='';
-  const groups = {safe:[], risk:[], unsafe:[]};
-  rows.forEach(r=>{
-    const p = pct(r.realOmset,r.targetOmset);
-    groups[getStatus(r,p).key].push({...r, pct:p});
-  });
-  Object.values(groups).forEach(g=>g.sort((a,b)=>b.pct-a.pct));
-
-  const meta = {
-    safe:{title:"Aman", note:"≥ 95% target"},
-    risk:{title:"Waspada", note:"80% – 94% target"},
-    unsafe:{title:"Tidak Aman", note:"< 80% target"},
-  };
-
-  Object.entries(groups).forEach(([key,list])=>{
-    const col = document.createElement('div');
-    col.className = `status-col ${key}`;
-    col.innerHTML = `
-      <div class="status-col-head">
-        <span class="name">${meta[key].title}</span>
-        <span class="count">${list.length}</span>
-      </div>
-    `;
-    if(list.length===0){
-      const empty = document.createElement('div');
-      empty.style.cssText="font-size:12px;color:var(--ink-faint);padding:10px 2px;";
-      empty.textContent = "Tidak ada outlet.";
-      col.appendChild(empty);
-    }
-    list.forEach(r=>{
-      const isHi = state.outlet!=="ALL" && state.outlet===r.outlet;
-      const row = document.createElement('div');
-      row.className = 'outlet-row' + (isHi?' highlight':'');
-      const markerPos = Math.max(2, Math.min(98, (r.pct/130)*100));
-      row.innerHTML = `
-        <div class="top-line">
-          <span class="oname">${r.outlet}</span>
-          <span class="opct" style="color:var(--${key})">${r.pct.toFixed(1)}%</span>
-        </div>
-        <div class="gauge-bar">
-          <div class="zones"><div></div><div></div><div></div></div>
-          <div class="marker" style="left:${markerPos}%"></div>
-        </div>
-        <div class="rp-line"><span>${fmtRp(r.realOmset)}</span><span>Target ${fmtRp(r.targetOmset)}</span></div>
-      `;
-      col.appendChild(row);
-    });
-    board.appendChild(col);
-  });
+.brand-eyebrow{
+font-family:'IBM Plex Mono',monospace;
+font-size:11px; letter-spacing:0.14em; text-transform;
+color(--accent-ink); font-weight:600; margin-bottom:4px;
 }
-
-let activeMetric = 'omset';
-function renderTabs(){
-  const tabs = document.getElementById('tabs');
-  tabs.innerHTML='';
-  Object.entries(METRICS).forEach(([key,m])=>{
-    const b = document.createElement('button');
-    b.className='tab'+(key===activeMetric?' active':'');
-    b.textContent = m.label;
-    b.addEventListener('click', ()=>{ activeMetric=key; renderRanking(); });
-    tabs.appendChild(b);
-  });
+h1.title{
+font-family:'Barlow Condensed',sans-serif;
+font-weight:800; font-size:34px; margin:0; line-height:1;
+letter-spacing:0.01em;
 }
-
-function renderRanking(){
-  renderTabs();
-  const rows = currentRows();
-  const m = METRICS[activeMetric];
-  const withPct = rows.map(r=>({outlet:r.outlet, t:r[m.t], r:r[m.r], p: pct(r[m.r], r[m.t])}));
-  const sorted = [...withPct].sort((a,b)=>b.p-a.p);
-  const top5 = sorted.slice(0,5);
-  const bottom5 = sorted.slice(-5).reverse();
-
-  const build = (list, containerId)=>{
-    const el = document.getElementById(containerId);
-    el.innerHTML='';
-    const maxP = Math.max(...list.map(x=>x.p), 1);
-    list.forEach((x,i)=>{
-      const isHi = state.outlet!=="ALL" && state.outlet===x.outlet;
-      const barW = Math.max(4, Math.min(100, (x.p/Math.max(maxP,120))*100));
-      const item = document.createElement('div');
-      item.className='rank-item'+(isHi?' highlight':'');
-      item.innerHTML = `
-        <span class="rnum">${i+1}</span>
-        <span>
-          <span class="rname">${x.outlet}</span>
-          <div class="rbar-wrap"><div class="rbar" style="width:${barW}%"></div></div>
-        </span>
-        <span>
-          <div class="rval">${x.p.toFixed(1)}%</div>
-          <div class="rsub">${fmtNum(x.r,m.unit)}</div>
-        </span>
-      `;
-      el.appendChild(item);
-    });
-  };
-  build(top5,'rankTop');
-  build(bottom5,'rankBottom');
+.filters{display; gap:10px; align-items; flex-wrap;}
+.field{display; flex-direction; gap:4px;}
+.field label{
+font-size:10.5px; text-transform; letter-spacing:0.09em;
+color(--ink-faint); font-weight:600;
 }
-
-const SPREADSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbUN7PRimr1MSV21QsBZRC9kmBVS8pCdIhoXXON65EMbcUiAlu-PwpuHIctr34YPWTERXERZyq0A7a/pub?gid=0&single=true&output=csv";
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
-
-const ALIASES = {
-  tanggal:      ['tanggal','date','tgl'],
-  outlet:       ['outlet','toko','store','cabang'],
-  targetOmset:  ['targetomset','targetomzet','targetsales','targetrevenue','targetpenjualan'],
-  realOmset:    ['realisasiomset','realomset','realisasiomzet','realomzet','realisasi','aktualomset'],
-  targetBasket: ['targetbasket','targetbasketsize','targetatv'],
-  realBasket:   ['realisasibasket','realbasket','realisasibasketsize','realbasketsize','realatv','realisasiatv'],
-  targetOgura:  ['targetogura','targetogurapcs'],
-  realOgura:    ['realisasiogura','realogura','aktualogura'],
-  targetBundling:['targetbundling'],
-  realBundling: ['realisasibundling','realbundling','aktualbundling'],
-  targetMember: ['targetmember'],
-  realMember:   ['realisasimember','realmember','aktualmember'],
-  status:       ['status'],
-  area:         ['area','kawasan','wilayah','region'],
-};
-
-function normalizeHeader(h){ return String(h).toLowerCase().replace(/[^a-z0-9]/g,''); }
-
-function splitLine(line, delim){
-  const result = []; let cur=''; let inQ=false;
-  for(let i=0;i<line.length;i++){
-    const ch = line[i];
-    if(ch === '"'){
-      if(inQ && line[i+1] === '"'){ cur+='"'; i++; } else { inQ = !inQ; }
-    } else if(ch===delim && !inQ){ result.push(cur); cur=''; }
-    else { cur += ch; }
-  }
-  result.push(cur);
-  return result.map(s=>s.trim());
+select{
+appearance;
+background(--surface) url('data/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path d="M0 0L5 7L10 0Z" fill="%236B7280"/></svg>') no-repeat right 12px center;
+border:1.5px solid var(--line-strong);
+border-radius:9px;
+padding:9px 34px 9px 13px;
+font-family:'IBM Plex Sans',sans-serif;
+font-size:13.5px; font-weight:600; color(--ink);
+min-width:170px; cursor;
 }
+select{outline:2px solid var(--accent); outline-offset:1px;}
 
-function detectDelimiter(headerLine){
-  const commas = (headerLine.match(/,/g)||[]).length;
-  const semis = (headerLine.match(/;/g)||[]).length;
-  return semis > commas ? ';' : ',';
+.date-picker-wrap{position;}
+.date-btn{
+appearance;
+background(--surface) url('data/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path d="M0 0L5 7L10 0Z" fill="%236B7280"/></svg>') no-repeat right 12px center;
+border:1.5px solid var(--line-strong);
+border-radius:9px;
+padding:9px 34px 9px 13px;
+font-family:'IBM Plex Sans',sans-serif;
+font-size:13.5px; font-weight:600; color(--ink);
+min-width:170px; cursor; text-align;
 }
-
-function mapColumns(headerCells){
-  const used = new Set(); const colMap = {};
-  const keys = Object.keys(ALIASES);
-  keys.forEach(key=>{
-    for(let idx=0; idx<headerCells.length; idx++){
-      if(used.has(idx)) continue;
-      if(ALIASES[key].includes(headerCells[idx])){ colMap[key]=idx; used.add(idx); break; }
-    }
-  });
-  keys.forEach(key=>{
-    if(colMap[key]!==undefined) return;
-    for(let idx=0; idx<headerCells.length; idx++){
-      if(used.has(idx)) continue;
-      const hc = headerCells[idx];
-      if(ALIASES[key].some(a => hc.includes(a) || a.includes(hc))){ colMap[key]=idx; used.add(idx); break; }
-    }
-  });
-  return colMap;
+.date-btn{outline:2px solid var(--accent); outline-offset:1px;}
+.cal-popup{
+position; top(100% + 6px); left:0; z-index:80;
+background(--surface); border:1px solid var(--line-strong); border-radius:12px;
+box-shadow:0 10px 30px rgba(24,27,32,0.14);
+padding:12px; width:250px; display;
 }
-
-function parseNum(str){
-  if(str===undefined || str===null || str==='') return 0;
-  const cleaned = String(str).replace(/[^0-9\-]/g,'');
-  const n = parseInt(cleaned,10);
-  return isNaN(n) ? 0 : n;
+.cal-popup.open{display;}
+.cal-header{display; align-items; justify-content; margin-bottom:8px;}
+.cal-header button{
+background; border; cursor; font-size:16px; color(--ink-soft);
+padding:3px 9px; border-radius:6px; font-weight:700;
 }
-
-function normalizeDateStr(str){
-  if(!str) return '';
-  str = String(str).trim();
-  if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-  let m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if(m){
-    const a = parseInt(m[1],10);
-    const b = parseInt(m[2],10);
-    const y = m[3];
-    let month, day;
-    if(a > 12 && b <= 12){
-      // bagian pertama pasti tanggal (karena bulan maksimal 12)
-      day = a; month = b;
-    } else if(b > 12 && a <= 12){
-      // bagian kedua pasti tanggal
-      month = a; day = b;
-    } else {
-      // ambigu (keduanya <=12) -> asumsikan MM/DD/YYYY sesuai format spreadsheet ini
-      month = a; day = b;
-    }
-    return `${y}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-  }
-  const dd = new Date(str);
-  if(!isNaN(dd)) return dd.toISOString().slice(0,10);
-  return str;
+.cal-header button{background(--surface-alt); color(--ink);}
+.cal-title{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;}
+.cal-grid{display; grid-template-columns(7,1fr); gap:2px;}
+.cal-dow{font-size:10px; color(--ink-faint); text-align; font-weight:700; padding:4px 0;}
+.cal-day{
+font-size:12px; text-align; padding:7px 0; border-radius:50%;
+cursor; color(--ink);
 }
+.cal-day{background(--accent-bg);}
+.cal-day.disabled{color(--line-strong); cursor; pointer-events;}
+.cal-day.other-month{color(--ink-faint); opacity:0.35; pointer-events;}
+.cal-day.selected{background(--ink); color:#fff; font-weight:700;}
+.cal-day.today(.selected){outline:1.5px solid var(--accent); outline-offset:-1.5px;}
 
-function mapStatusRaw(raw){
-  if(!raw) return undefined;
-  const s = raw.toLowerCase();
-  if(s.includes('tidak') || s.includes('unsafe') || s.includes('bahaya')) return 'unsafe';
-  if(s.includes('waspada') || s.includes('risk') || s.includes('risiko')) return 'risk';
-  if(s.includes('aman') || s.includes('safe')) return 'safe';
-  return undefined;
+.grid-top{display; grid-template-columns:1.15fr 1.4fr; gap:16px; margin-bottom:16px;}
+@media (max-width:980px){.grid-top{grid-template-columns:1fr;}}
+.card{
+background(--surface);
+border:1px solid var(--line);
+border-radius(--radius);
+padding:20px 22px;
 }
-
-function parseCSV(text){
-  const lines = text.split(/\r\n|\n|\r/).filter(l=>l.trim().length>0);
-  if(lines.length < 2) throw new Error('Data tidak lengkap — pastikan ada baris header dan minimal satu baris data.');
-  const delim = detectDelimiter(lines[0]);
-  const headerCells = splitLine(lines[0], delim).map(normalizeHeader);
-  const colMap = mapColumns(headerCells);
-  const required = ['tanggal','outlet','targetOmset','realOmset'];
-  const missing = required.filter(k => colMap[k]===undefined);
-  if(missing.length) throw new Error('Kolom wajib tidak ditemukan: ' + missing.join(', ') + '. Cek kembali nama header di baris pertama.');
-
-  const rows = [];
-  for(let i=1;i<lines.length;i++){
-    const cells = splitLine(lines[i], delim);
-    if(cells.every(c=>c.trim()==='')) continue;
-    const get = key => colMap[key]!==undefined ? cells[colMap[key]] : undefined;
-    const outlet = (get('outlet')||'').trim();
-    const tanggal = normalizeDateStr(get('tanggal'));
-    if(!outlet || !tanggal) continue;
-    rows.push({
-      tanggal, outlet,
-      targetOmset: parseNum(get('targetOmset')), realOmset: parseNum(get('realOmset')),
-      targetBasket: parseNum(get('targetBasket')), realBasket: parseNum(get('realBasket')),
-      targetOgura: parseNum(get('targetOgura')), realOgura: parseNum(get('realOgura')),
-      targetBundling: parseNum(get('targetBundling')), realBundling: parseNum(get('realBundling')),
-      targetMember: parseNum(get('targetMember')), realMember: parseNum(get('realMember')),
-      statusRaw: (get('status')||'').trim(),
-      areaRaw: (get('area')||'').trim(),
-    });
-  }
-  if(rows.length===0) throw new Error('Tidak ada baris data valid yang bisa dibaca dari file ini.');
-  return rows;
+.card-head{display; align-items; justify-content; margin-bottom:14px;}
+.card-head h2{
+font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:19px;
+margin:0; letter-spacing:0.01em;
 }
+.card-head .sub{font-size:12px; color(--ink-soft);}
 
-function rebuildFromRows(rows){
-  const byDate = {}; const outletSet = new Set();
-  const newOutletArea = {};
-  let hasAreaColumn = false;
-  rows.forEach(r=>{
-    outletSet.add(r.outlet);
-    if(r.areaRaw){ hasAreaColumn = true; newOutletArea[r.outlet] = r.areaRaw; }
-    if(!byDate[r.tanggal]) byDate[r.tanggal] = [];
-    byDate[r.tanggal].push({
-      outlet:r.outlet,
-      targetOmset:r.targetOmset, realOmset:r.realOmset,
-      targetBasket:r.targetBasket, realBasket:r.realBasket,
-      targetOgura:r.targetOgura, realOgura:r.realOgura,
-      targetBundling:r.targetBundling, realBundling:r.realBundling,
-      targetMember:r.targetMember, realMember:r.realMember,
-      statusOverride: mapStatusRaw(r.statusRaw),
-    });
-  });
-  DATES = Object.keys(byDate).sort();
-  OUTLETS = Array.from(outletSet).sort((a,b)=>a.localeCompare(b,'id'));
-  DATA = byDate;
-  if(hasAreaColumn){
-    OUTLET_AREA = newOutletArea;
-  }
-  state.dateStart = DATES[0];
-  state.dateEnd = DATES[DATES.length-1];
-  state.area = 'ALL';
-  state.outlet = 'ALL';
-  updateDateButtons();
-  fillAreaSelect();
-  fillOutletSelect();
-  render();
-  return {rowCount: rows.length, dateCount: DATES.length, outletCount: OUTLETS.length};
+.hero{display; gap:22px; align-items;}
+.gauge-wrap{position; width:196px; flex;}
+.gauge-num{
+position; left:0; right:0; top:108px; text-align;
 }
-
-function setSyncStatus(mode, text){
-  const dot = document.getElementById('syncDot');
-  const label = document.getElementById('syncText');
-  dot.className = 'sync-dot ' + mode;
-  label.textContent = text;
+.gauge-num .pct{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:40px; line-height:1;}
+.gauge-num .lbl{font-size:11px; color(--ink-soft); font-weight:600; text-transform; letter-spacing:0.08em; margin-top:2px;}
+.hero-stats{flex:1; display; flex-direction; gap:10px;}
+.hero-stat-row{
+display; align-items; justify-content;
+padding:9px 0; border-bottom:1px dashed var(--line);
 }
-
-function timeNow(){
-  return new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+.hero-stat-row{border-bottom;}
+.hero-stat-row .k{font-size:12.5px; color(--ink-soft); font-weight:500;}
+.hero-stat-row .v{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:21px;}
+.v.pos{color(--safe);}
+.v.neg{color(--unsafe);}
+.status-pill{
+display; align-items; gap:6px;
+padding:4px 11px; border-radius:99px; font-size:12px; font-weight:700;
+text-transform; letter-spacing:0.04em;
 }
+.status-pill.safe{background(--safe-bg); color(--safe);}
+.status-pill.risk{background(--risk-bg); color(--risk);}
+.status-pill.unsafe{background(--unsafe-bg); color(--unsafe);}
+.status-pill .dot{width:7px; height:7px; border-radius:50%; background;}
 
-async function syncFromSpreadsheet(){
-  if(!SPREADSHEET_CSV_URL || SPREADSHEET_CSV_URL.includes('PASTE_LINK_CSV_KAMU')){
-    setSyncStatus('err', 'Link CSV belum diatur — lihat komentar SPREADSHEET_CSV_URL di kode.');
-    render();
-    return;
-  }
-  setSyncStatus('loading', 'Menyinkronkan data…');
-  try{
-    const res = await fetch(SPREADSHEET_CSV_URL, {cache:'no-store'});
-    if(!res.ok) throw new Error('Server merespons status ' + res.status);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    const info = rebuildFromRows(rows);
-    setSyncStatus('ok', `Tersinkron · ${info.outletCount} outlet · ${info.dateCount} tanggal · pukul ${timeNow()}`);
-  }catch(e){
-    setSyncStatus('err', 'Gagal sinkron (' + e.message + ') · menampilkan data terakhir · pukul ' + timeNow());
-  }
+.kpi-mini-row{display; grid-template-columns(4,1fr); gap:12px; margin-bottom:16px;}
+@media (max-width:820px){.kpi-mini-row{grid-template-columns(2,1fr);}}
+.kpi-mini{
+background(--surface); border:1px solid var(--line); border-radius:12px;
+padding:14px 16px;
 }
+.kpi-mini .lbl{font-size:11px; text-transform; letter-spacing:0.07em; color(--ink-faint); font-weight:600;}
+.kpi-mini .val{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:24px; margin-top:4px;}
+.kpi-mini .foot{font-size:11.5px; color(--ink-soft); margin-top:3px;}
 
-render();
-syncFromSpreadsheet();
-setInterval(syncFromSpreadsheet, REFRESH_INTERVAL_MS);
-</script>
-</body>
-</html>
+.status-board{display; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px;}
+@media (max-width:900px){.status-board{grid-template-columns:1fr;}}
+.status-col{
+background(--surface-alt); border:1px solid var(--line); border-radius(--radius);
+padding:14px 14px 8px;
+}
+.status-col-head{
+display; align-items; justify-content; margin-bottom:10px;
+padding-bottom:10px; border-bottom:2px solid;
+}
+.status-col.safe .status-col-head{border-color(--safe-line); color(--safe);}
+.status-col.risk .status-col-head{border-color(--risk-line); color(--risk);}
+.status-col.unsafe .status-col-head{border-color(--unsafe-line); color(--unsafe);}
+.status-col-head .name{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:17px; color(--ink);}
+.status-col-head .count{
+font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px;
+}
+.outlet-row{
+background(--surface); border:1px solid var(--line); border-radius:9px;
+padding:9px 11px; margin-bottom:8px; cursor; transition .15s;
+}
+.outlet-row.highlight{outline:2px solid var(--accent); outline-offset:1px;}
+.outlet-row .top-line{display; justify-content; align-items; margin-bottom:6px;}
+.outlet-row .oname{font-weight:600; font-size:13px;}
+.outlet-row .opct{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:16px;}
+.gauge-bar{
+position; height:7px; border-radius:99px; background(--line);
+overflow;
+}
+.gauge-bar .zones{position; inset:0; display;}
+.gauge-bar .zones div(1){background(--unsafe-bg); flex:80;}
+.gauge-bar .zones div(2){background(--risk-bg); flex:15;}
+.gauge-bar .zones div(3){background(--safe-bg); flex:45;}
+.gauge-bar .marker{
+position; top:-2.5px; width:3px; height:12px; border-radius:2px;
+background(--ink); transform(-1.5px);
+}
+.outlet-row .rp-line{display; justify-content; margin-top:5px; font-size:11px; color(--ink-soft);}
+
+.rank-card{background(--surface); border:1px solid var(--line); border-radius(--radius); padding:18px 20px 20px;}
+.tabs{display; gap:6px; flex-wrap; margin-bottom:16px;}
+.tab{
+font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:12.5px;
+padding:8px 15px; border-radius:99px; border:1.5px solid var(--line-strong);
+background(--surface); color(--ink-soft); cursor;
+}
+.tab.active{background(--ink); border-color(--ink); color:#fff;}
+.rank-grid{display; grid-template-columns:1fr 1fr; gap:22px;}
+@media (max-width:820px){.rank-grid{grid-template-columns:1fr;}}
+.rank-col-title{
+display; align-items; gap:7px; margin-bottom:10px;
+font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;
+text-transform; letter-spacing:0.04em;
+}
+.rank-col-title.top{color(--safe);}
+.rank-col-title.bottom{color(--unsafe);}
+.rank-item{
+display; grid-template-columns:22px 1fr 74px; align-items; gap:10px;
+padding:8px 0; border-bottom:1px solid var(--line);
+}
+.rank-item{border-bottom;}
+.rank-item .rnum{
+font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:15px; color(--ink-faint);
+}
+.rank-item.highlight{background(--accent-bg); border-radius:8px; padding-left:6px; margin-left:-6px;}
+.rank-item .rname{font-size:13px; font-weight:600;}
+.rank-item .rbar-wrap{height:6px; background(--line); border-radius:99px; margin-top:5px; overflow;}
+.rank-item .rbar{height:100%; border-radius:99px;}
+.rank-col.top .rbar{background(--safe);}
+.rank-col.bottom .rbar{background(--unsafe);}
+.rank-item .rval{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14.5px; text-align;}
+.rank-item .rsub{font-size:10.5px; color(--ink-soft); text-align;}
+
+.legend{display; gap:16px; align-items; font-size:11.5px; color(--ink-soft); margin-top:6px; flex-wrap;}
+.legend span{display; align-items; gap:5px;}
+.legend i{width:9px; height:9px; border-radius:2px; display;}
+
+footer.note{margin-top:20px; font-size:11.5px; color(--ink-faint); text-align;}
+
+.sync-status{
+display; align-items; gap:8px;
+font-size:12px; color(--ink-soft); margin-bottom:16px;
+}
+.sync-dot{width:8px; height:8px; border-radius:50%; background(--ink-faint); flex;}
+.sync-dot.ok{background(--safe);}
+.sync-dot.err{background(--unsafe);}
+.sync-dot.loading{background(--risk); animation 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+</style>
+
+</head> <body>
+
+<header class="top"> <div> <div class="brand-eyebrow">Retail Ops · Live Monitoring</div> <h1 class="title">Dashboard Pencapaian Outlet</h1> </div> <div class="filters"> <div class="field"> <label for="dateStartBtn">Tanggal Mulai</label> <div class="date-picker-wrap"> <button type="button" class="date-btn" id="dateStartBtn"></button> <div class="cal-popup" id="calStart"></div> </div> </div> <div class="field"> <label for="dateEndBtn">Tanggal Selesai</label> <div class="date-picker-wrap"> <button type="button" class="date-btn" id="dateEndBtn"></button> <div class="cal-popup" id="calEnd"></div> </div> </div> <div class="field"> <label for="areaSel">Area</label> <select id="areaSel"></select> </div> <div class="field"> <label for="outletSel">Outlet</label> <select id="outletSel"></select> </div> </div> </header>
+
+<div class="sync-status" id="syncStatus"> <span id="syncDot" class="sync-dot"></span> <span id="syncText">Memuat data…</span> </div>
+
+<section class="grid-top"> <div class="card"> <div class="card-head"> <h2>Capaian Omset</h2> <span class="sub" id="heroSub">Semua outlet</span> </div> <div class="hero"> <div class="gauge-wrap"> <svg id="gaugeSvg" width="196" height="118" viewBox="0 0 196 118"></svg> <div class="gauge-num"> <div class="pct" id="gaugePct">0%</div> <div class="lbl">Pencapaian</div> </div> </div> <div class="hero-stats"> <div class="hero-stat-row"><span class="k">Target Omset</span><span class="v" id="stTarget">-</span></div> <div class="hero-stat-row"><span class="k">Realisasi Omset</span><span class="v" id="stReal">-</span></div> <div class="hero-stat-row"><span class="k">Sisa Target</span><span class="v neg" id="stSisa">-</span></div> <div class="hero-stat-row"><span class="k">Status</span><span id="stStatus"></span></div> </div> </div> </div>
+
+<div class="card"> <div class="card-head"> <h2>Ringkasan Metrik Lain</h2> <span class="sub" id="miniKpiSub">Rata-rata / total pada tanggal terpilih</span> </div> <div class="kpi-mini-row" id="miniKpis"></div> </div> </section>
+
+<div class="legend" style="margin:0 0 10px 2px;"> <span><i style="background:var(--safe)"></i>Aman ≥ 95%</span> <span><i style="background:var(--risk)"></i>Waspada 80–94%</span> <span><i style="background:var(--unsafe)"></i>Tidak Aman &lt; 80%</span> </div>
+
+<section class="status-board" id="statusBoard"></section>
+
+<section class="rank-card"> <div class="card-head"> <h2>Ranking Outlet</h2> <span class="sub">Top 5 &amp; Bottom 5 berdasarkan % pencapaian</span> </div> <div class="tabs" id="tabs"></div> <div class="rank-grid"> <div class="rank-col top"> <div class="rank-col-title top">▲ Top 5</div> <div id="rankTop"></div> </div> <div class="rank-col bottom"> <div class="rank-col-title bottom">▼ Bottom 5</div> <div id="rankBottom"></div> </div> </div> </section>
+
+<footer class="note">Mockup konsep — seluruh angka adalah data dummy untuk ilustrasi tata letak, bukan data aktual.</footer>
+
+<script> const AREA_MAP = { "Area 1": ["Nusa Indah","UMY","Godean","Tajem","Jakal UII","Merbabu","Rajawali","Magelang","Muntilan","Temanggung"], "Area 2": ["Makam Haji","UMS","Jebres","Laweyan","Nusukan","Boyolali","Karanganyar","Sukoharjo","Sragen"], "Area 3": ["Unnes","UNDIP","Gajah Raya","UNIMUS","UDINUS","Sampangan","UKSW","Ambarawa","Ngaliyan"], }; let OUTLET_AREA = {}; Object.entries(AREA_MAP).forEach(([area, list])=>{ list.forEach(o=> OUTLET_AREA[o] = area); }); function getAreaOfOutlet(outlet){ return OUTLET_AREA[outlet] || "Tanpa Area"; } let OUTLETS = Object.values(AREA_MAP).flat(); let DATES = ["2026-07-11","2026-07-12","2026-07-13"]; function mulberry32(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; } function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return h;} function genFactor(rng, lo, hi){ return lo + rng()*(hi-lo); } let DATA = {}; function buildDummyData(){ const d = {}; DATES.forEach(date=>{ d[date] = OUTLETS.map((name,i)=>{ const rng = mulberry32(hashStr(date+name)+i*97); const targetOmset = Math.round(genFactor(rng,80,155))*1_000_000; const realOmset = Math.round(targetOmset*genFactor(rng,0.62,1.18)); const targetBasket = Math.round(genFactor(rng,45,78))*1000; const realBasket = Math.round(targetBasket*genFactor(rng,0.75,1.22)); const targetOgura = Math.round(genFactor(rng,180,520)); const realOgura = Math.round(targetOgura*genFactor(rng,0.55,1.35)); const targetBundling = Math.round(genFactor(rng,4,16))*1_000_000; const realBundling = Math.round(targetBundling*genFactor(rng,0.6,1.28)); const targetMember = Math.round(genFactor(rng,28,85)); const realMember = Math.round(targetMember*genFactor(rng,0.55,1.3)); return {outlet:name, targetOmset, realOmset, targetBasket, realBasket, targetOgura, realOgura, targetBundling, realBundling, targetMember, realMember}; }); }); return d; } DATA = buildDummyData(); const METRICS = { omset: {label:"Omset", unit:"rp", t:"targetOmset", r:"realOmset"}, basket: {label:"Basket Size", unit:"rp", t:"targetBasket", r:"realBasket"}, ogura: {label:"Ogura", unit:"pcs", t:"targetOgura", r:"realOgura"}, bundling:{label:"Bundling", unit:"rp", t:"targetBundling", r:"realBundling"}, member: {label:"Member", unit:"org", t:"targetMember", r:"realMember"}, }; const fmtRp = n => "Rp " + Math.round(n).toLocaleString('id-ID'); const fmtNum = (n,unit) => unit==="rp" ? fmtRp(n) : Math.round(n).toLocaleString('id-ID')+" "+unit; const pct = (r,t) => t===0 ? 0 : (r/t*100); function statusOf(p){ if(p>=95) return {key:"safe", label:"Aman"}; if(p>=80) return {key:"risk", label:"Waspada"}; return {key:"unsafe", label:"Tidak Aman"}; } const STATUS_LABELS = {safe:"Aman", risk:"Waspada", unsafe:"Tidak Aman"}; function getStatus(row, p){ if(row && row.statusOverride) return {key:row.statusOverride, label:STATUS_LABELS[row.statusOverride]}; return statusOf(p); } let state = {dateStart: DATES[0], dateEnd: DATES[DATES.length-1], area: "ALL", outlet: "ALL"}; /* ================= DATE PICKER (KALENDER CUSTOM) ================= */ const dateStartBtn = document.getElementById('dateStartBtn'); const dateEndBtn = document.getElementById('dateEndBtn'); const calStartEl = document.getElementById('calStart'); const calEndEl = document.getElementById('calEnd'); let calStartView = new Date(); let calEndView = new Date(); const MONTH_NAMES = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; const DOW_NAMES = ['M','S','S','R','K','J','S']; function ymd(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; } function dateLabel(d){ const dd = new Date(d); return isNaN(dd) ? d : dd.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); } function updateDateButtons(){ dateStartBtn.textContent = dateLabel(state.dateStart); dateEndBtn.textContent = dateLabel(state.dateEnd); } function renderCalendar(containerId, viewDate, selectedStr, onPick){ const container = document.getElementById(containerId); const year = viewDate.getFullYear(); const month = viewDate.getMonth(); const firstDay = new Date(year, month, 1); const startWeekday = firstDay.getDay(); const daysInMonth = new Date(year, month+1, 0).getDate(); const daysInPrevMonth = new Date(year, month, 0).getDate(); const todayStr = new Date().toISOString().slice(0,10); let cells = ''; for(let i=0;i<startWeekday;i++){ const d = daysInPrevMonth - startWeekday + 1 + i; cells += `<div class="cal-day other-month">${d}</div>`; } for(let d=1; d<=daysInMonth; d++){ const dateStr = ymd(year, month, d); const exists = DATES.includes(dateStr); let cls = 'cal-day'; if(!exists) cls += ' disabled'; if(dateStr === selectedStr) cls += ' selected'; if(dateStr === todayStr) cls += ' today'; cells += `<div class="${cls}" data-date="${dateStr}">${d}</div>`; } const totalCells = startWeekday + daysInMonth; const remainder = (7 - (totalCells % 7)) % 7; for(let d=1; d<=remainder; d++){ cells += `<div class="cal-day other-month">${d}</div>`; } container.innerHTML = ` <div class="cal-header"> <button type="button" class="cal-prev">‹</button> <span class="cal-title">${MONTH_NAMES[month]} ${year}</span> <button type="button" class="cal-next">›</button> </div> <div class="cal-grid"> ${DOW_NAMES.map(d=>`<div class="cal-dow">${d}</div>`).join('')} ${cells} </div> `; container.querySelector('.cal-prev').addEventListener('click', (e)=>{ e.stopPropagation(); viewDate.setMonth(viewDate.getMonth()-1); renderCalendar(containerId, viewDate, selectedStr, onPick); }); container.querySelector('.cal-next').addEventListener('click', (e)=>{ e.stopPropagation(); viewDate.setMonth(viewDate.getMonth()+1); renderCalendar(containerId, viewDate, selectedStr, onPick); }); container.querySelectorAll('.cal-day[data-date]').forEach(el=>{ el.addEventListener('click', (e)=>{ e.stopPropagation(); onPick(el.getAttribute('data-date')); }); }); } function closeAllCalendars(){ calStartEl.classList.remove('open'); calEndEl.classList.remove('open'); } function openCalendar(which){ const wasOpen = (which==='start' ? calStartEl : calEndEl).classList.contains('open'); closeAllCalendars(); if(wasOpen) return; if(which==='start'){ calStartView = new Date(state.dateStart); renderCalendar('calStart', calStartView, state.dateStart, (picked)=>{ state.dateStart = picked; if(state.dateStart > state.dateEnd) state.dateEnd = state.dateStart; updateDateButtons(); closeAllCalendars(); render(); }); calStartEl.classList.add('open'); } else { calEndView = new Date(state.dateEnd); renderCalendar('calEnd', calEndView, state.dateEnd, (picked)=>{ state.dateEnd = picked; if(state.dateEnd < state.dateStart) state.dateStart = state.dateEnd; updateDateButtons(); closeAllCalendars(); render(); }); calEndEl.classList.add('open'); } } dateStartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('start'); }); dateEndBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('end'); }); document.addEventListener('click', closeAllCalendars); const areaSel = document.getElementById('areaSel'); function fillAreaSelect(){ const areas = new Set(); OUTLETS.forEach(o=> areas.add(getAreaOfOutlet(o))); const sorted = Array.from(areas).sort((a,b)=> a.localeCompare(b,'id',{numeric:true})); areaSel.innerHTML=''; const optAll = document.createElement('option'); optAll.value='ALL'; optAll.textContent='Semua Area'; areaSel.appendChild(optAll); sorted.forEach(a=>{ const opt=document.createElement('option'); opt.value=a; opt.textContent=a; areaSel.appendChild(opt); }); if(!sorted.includes(state.area)) state.area='ALL'; areaSel.value = state.area; } areaSel.addEventListener('change', ()=>{ state.area = areaSel.value; state.outlet = 'ALL'; fillOutletSelect(); render(); }); const outletSel = document.getElementById('outletSel'); function fillOutletSelect(){ outletSel.innerHTML=''; const optAll = document.createElement('option'); optAll.value="ALL"; optAll.textContent="Semua Outlet"; outletSel.appendChild(optAll); const filtered = state.area==='ALL' ? OUTLETS : OUTLETS.filter(o=> getAreaOfOutlet(o)===state.area); filtered.forEach(o=>{ const opt=document.createElement('option'); opt.value=o; opt.textContent=o; outletSel.appendChild(opt); }); if(state.outlet!=='ALL' && !filtered.includes(state.outlet)) state.outlet='ALL'; outletSel.value = state.outlet; } updateDateButtons(); fillAreaSelect(); fillOutletSelect(); outletSel.addEventListener('change', ()=>{state.outlet=outletSel.value; render();}); function drawGauge(p){ const svg = document.getElementById('gaugeSvg'); const cx=98, cy=104, r=84; const clamp = Math.max(0, Math.min(130, p)); const maxVal = 130; const angle = (clamp/maxVal)*180; const unsafeEnd = (80/maxVal)*180; const riskEnd = (95/maxVal)*180; function arcPath(a0,a1,rad){ const p0 = polar(a0,rad), p1 = polar(a1,rad); const largeArc = (a1-a0) > 180 ? 1 : 0; return `M ${p0[0]} ${p0[1]} A ${rad} ${rad} 0 ${largeArc} 1 ${p1[0]} ${p1[1]}`; } function polar(deg,rad){ const rad2 = (180-deg)*Math.PI/180; return [cx - rad*Math.cos(rad2), cy - rad*Math.sin(rad2)]; } const needleTip = polar(angle, r-14); svg.innerHTML = ` <path d="${arcPath(0,unsafeEnd,r)}" stroke="var(--unsafe-bg)" stroke-width="16" fill="none" stroke-linecap="butt"/> <path d="${arcPath(unsafeEnd,riskEnd,r)}" stroke="var(--risk-bg)" stroke-width="16" fill="none"/> <path d="${arcPath(riskEnd,180,r)}" stroke="var(--safe-bg)" stroke-width="16" fill="none"/> <path d="${arcPath(0,unsafeEnd,r)}" stroke="var(--unsafe)" stroke-width="3" fill="none" stroke-dasharray="1 1000"/> <line x1="${cx}" y1="${cy}" x2="${needleTip[0]}" y2="${needleTip[1]}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/> <circle cx="${cx}" cy="${cy}" r="6" fill="var(--ink)"/> `; } const SUM_FIELDS = ['targetOmset','realOmset','targetOgura','realOgura','targetBundling','realBundling','targetMember','realMember']; const AVG_FIELDS = ['targetBasket','realBasket']; function datesInRange(){ return DATES.filter(d => d >= state.dateStart && d <= state.dateEnd).sort(); } function currentRows(){ const range = datesInRange(); if(range.length === 0) return []; if(range.length === 1){ return DATA[range[0]] || []; } const acc = {}; OUTLETS.forEach(o=>{ const base = {outlet:o, statusOverride:undefined, _days:0}; SUM_FIELDS.forEach(f=> base[f]=0); AVG_FIELDS.forEach(f=> base[f]=0); acc[o] = base; }); range.forEach(d=>{ (DATA[d]||[]).forEach(r=>{ const s = acc[r.outlet]; if(!s) return; SUM_FIELDS.forEach(f=> s[f] += (r[f]||0)); AVG_FIELDS.forEach(f=> s[f] += (r[f]||0)); s._days++; }); }); return Object.values(acc).filter(s=>s._days>0).map(s=>{ AVG_FIELDS.forEach(f=> s[f] = Math.round(s[f]/s._days)); return s; }); } function periodLabel(){ const range = datesInRange(); if(range.length===0) return "Tidak ada data pada rentang ini"; if(range.length===1) return dateLabel(range[0]); return `${dateLabel(range[0])} – ${dateLabel(range[range.length-1])} (${range.length} hari)`; } function render(){ const rows = currentRows(); renderHero(rows); renderMiniKpis(rows); renderStatusBoard(rows); renderRanking(); } function renderHero(rows){ let target, real, label, row=null; if(state.outlet==="ALL"){ target = rows.reduce((s,r)=>s+r.targetOmset,0); real = rows.reduce((s,r)=>s+r.realOmset,0); label = "Semua outlet (" + rows.length + ") · " + periodLabel(); } else { row = rows.find(r=>r.outlet===state.outlet); target = row ? row.targetOmset : 0; real = row ? row.realOmset : 0; label = "Outlet " + state.outlet + " · " + periodLabel(); } const p = pct(real,target); const st = getStatus(row, p); document.getElementById('heroSub').textContent = label; document.getElementById('gaugePct').textContent = p.toFixed(1)+"%"; document.getElementById('gaugePct').style.color = `var(--${st.key})`; document.getElementById('stTarget').textContent = fmtRp(target); document.getElementById('stReal').textContent = fmtRp(real); const sisa = Math.max(0, target-real); document.getElementById('stSisa').textContent = sisa>0 ? fmtRp(sisa) : "Tercapai"; document.getElementById('stSisa').className = "v " + (sisa>0 ? "neg" : "pos"); document.getElementById('stStatus').innerHTML = `<span class="status-pill ${st.key}"><span class="dot"></span>${st.label}</span>`; drawGauge(p); } function renderMiniKpis(rows){ const wrap = document.getElementById('miniKpis'); wrap.innerHTML=''; const subEl = document.getElementById('miniKpiSub'); if(subEl) subEl.textContent = (datesInRange().length>1 ? "Total / rata-rata pada periode " : "Pada tanggal ") + periodLabel(); const scope = state.outlet==="ALL" ? rows : rows.filter(r=>r.outlet===state.outlet); Object.entries(METRICS).forEach(([key,m])=>{ if(key==="omset") return; const t = scope.reduce((s,r)=>s+r[m.t],0); const r = scope.reduce((s,r)=>s+r[m.r],0); const p = pct(r,t); const div = document.createElement('div'); div.className='kpi-mini'; div.innerHTML = ` <div class="lbl">${m.label}</div> <div class="val">${fmtNum(r,m.unit)}</div> <div class="foot">Target ${fmtNum(t,m.unit)} · ${p.toFixed(0)}% pencapaian</div> `; wrap.appendChild(div); }); } function renderStatusBoard(rows){ const board = document.getElementById('statusBoard'); board.innerHTML=''; const groups = {safe:[], risk:[], unsafe:[]}; rows.forEach(r=>{ const p = pct(r.realOmset, r.targetOmset); groups[getStatus(r,p).key].push({...r, pct:p}); }); Object.values(groups).forEach(g=>g.sort((a,b)=>b.pct-a.pct)); const meta = { safe:{title:"Aman", note:"≥ 95% target"}, risk:{title:"Waspada", note:"80% – 94% target"}, unsafe:{title:"Tidak Aman", note:"< 80% target"}, }; Object.entries(groups).forEach(([key,list])=>{ const col = document.createElement('div'); col.className = `status-col ${key}`; col.innerHTML = ` <div class="status-col-head"> <span class="name">${meta[key].title}</span> <span class="count">${list.length}</span> </div> `; if(list.length===0){ const empty = document.createElement('div'); empty.style.cssText="font-size:12px;color:var(--ink-faint);padding:10px 2px;"; empty.textContent = "Tidak ada outlet."; col.appendChild(empty); } list.forEach(r=>{ const isHi = state.outlet!=="ALL" && state.outlet===r.outlet; const row = document.createElement('div'); row.className = 'outlet-row' + (isHi?' highlight':''); const markerPos = Math.max(2, Math.min(98, (r.pct/130)*100)); row.innerHTML = ` <div class="top-line"> <span class="oname">${r.outlet}</span> <span class="opct" style="color:var(--${key})">${r.pct.toFixed(1)}%</span> </div> <div class="gauge-bar"> <div class="zones"><div></div><div></div><div></div></div> <div class="marker" style="left:${markerPos}%"></div> </div> <div class="rp-line"><span>${fmtRp(r.realOmset)}</span><span>Target ${fmtRp(r.targetOmset)}</span></div> `; col.appendChild(row); }); board.appendChild(col); }); } let activeMetric = 'omset'; function renderTabs(){ const tabs = document.getElementById('tabs'); tabs.innerHTML=''; Object.entries(METRICS).forEach(([key,m])=>{ const b = document.createElement('button'); b.className='tab'+(key===activeMetric?' active':''); b.textContent = m.label; b.addEventListener('click', ()=>{ activeMetric=key; renderRanking(); }); tabs.appendChild(b); }); } function renderRanking(){ renderTabs(); const rows = currentRows(); const m = METRICS[activeMetric]; const withPct = rows.map(r=>({outlet:r.outlet, t:r[m.t], r:r[m.r], p: pct(r[m.r], r[m.t])})); const sorted = [...withPct].sort((a,b)=>b.p-a.p); const top5 = sorted.slice(0,5); const bottom5 = sorted.slice(-5).reverse(); const build = (list, containerId)=>{ const el = document.getElementById(containerId); el.innerHTML=''; const maxP = Math.max(...list.map(x=>x.p), 1); list.forEach((x,i)=>{ const isHi = state.outlet!=="ALL" && state.outlet===x.outlet; const barW = Math.max(4, Math.min(100, (x.p/Math.max(maxP,120))*100)); const item = document.createElement('div'); item.className='rank-item'+(isHi?' highlight':''); item.innerHTML = ` <span class="rnum">${i+1}</span> <span> <span class="rname">${x.outlet}</span> <div class="rbar-wrap"><div class="rbar" style="width:${barW}%"></div></div> </span> <span> <div class="rval">${x.p.toFixed(1)}%</div> <div class="rsub">${fmtNum(x.r,m.unit)}</div> </span> `; el.appendChild(item); }); }; build(top5,'rankTop'); build(bottom5,'rankBottom'); } const SPREADSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbUN7PRimr1MSV21QsBZRC9kmBVS8pCdIhoXXON65EMbcUiAlu-PwpuHIctr34YPWTERXERZyq0A7a/pub?gid=0&single=true&output=csv"; const REFRESH_INTERVAL_MS = 5 * 60 * 1000; const ALIASES = { tanggal: ['tanggal','date','tgl'], outlet: ['outlet','toko','store','cabang'], targetOmset: ['targetomset','targetomzet','targetsales','targetrevenue','targetpenjualan'], realOmset: ['realisasiomset','realomset','realisasiomzet','realomzet','realisasi','aktualomset'], targetBasket: ['targetbasket','targetbasketsize','targetatv'], realBasket: ['realisasibasket','realbasket','realisasibasketsize','realbasketsize','realatv','realisasiatv'], targetOgura: ['targetogura','targetogurapcs'], realOgura: ['realisasiogura','realogura','aktualogura'], targetBundling:['targetbundling'], realBundling: ['realisasibundling','realbundling','aktualbundling'], targetMember: ['targetmember'], realMember: ['realisasimember','realmember','aktualmember'], status: ['status'], area: ['area','kawasan','wilayah','region'], }; function normalizeHeader(h){ return String(h).toLowerCase().replace(/[^a-z0-9]/g,''); } function splitLine(line, delim){ const result = []; let cur=''; let inQ=false; for(let i=0;i<line.length;i++){ const ch = line[i]; if(ch === '"'){ if(inQ && line[i+1] === '"'){ cur+='"'; i++; } else { inQ = !inQ; } } else if(ch===delim && !inQ){ result.push(cur); cur=''; } else { cur += ch; } } result.push(cur); return result.map(s=>s.trim()); } function detectDelimiter(headerLine){ const commas = (headerLine.match(/,/g)||[]).length; const semis = (headerLine.match(/;/g)||[]).length; return semis > commas ? ';' : ','; } function mapColumns(headerCells){ const used = new Set(); const colMap = {}; const keys = Object.keys(ALIASES); keys.forEach(key=>{ for(let idx=0; idx<headerCells.length; idx++){ if(used.has(idx)) continue; if(ALIASES[key].includes(headerCells[idx])){ colMap[key]=idx; used.add(idx); break; } } }); keys.forEach(key=>{ if(colMap[key]!==undefined) return; for(let idx=0; idx<headerCells.length; idx++){ if(used.has(idx)) continue; const hc = headerCells[idx]; if(ALIASES[key].some(a => hc.includes(a) || a.includes(hc))){ colMap[key]=idx; used.add(idx); break; } } }); return colMap; } function parseNum(str){ if(str===undefined || str===null || str==='') return 0; const cleaned = String(str).replace(/[^0-9\-]/g,''); const n = parseInt(cleaned,10); return isNaN(n) ? 0 : n; } function normalizeDateStr(str){ if(!str) return ''; str = String(str).trim(); if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str; let m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/); if(m){ const a = parseInt(m[1],10); const b = parseInt(m[2],10); const y = m[3]; let month, day; if(a > 12 && b <= 12){ // bagian pertama pasti tanggal (karena bulan maksimal 12) day = a; month = b; } else if(b > 12 && a <= 12){ // bagian kedua pasti tanggal month = a; day = b; } else { // ambigu (keduanya <=12) -> asumsikan MM/DD/YYYY sesuai format spreadsheet ini month = a; day = b; } return `${y}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`; } const dd = new Date(str); if(!isNaN(dd)) return dd.toISOString().slice(0,10); return str; } function mapStatusRaw(raw){ if(!raw) return undefined; const s = raw.toLowerCase(); if(s.includes('tidak') || s.includes('unsafe') || s.includes('bahaya')) return 'unsafe'; if(s.includes('waspada') || s.includes('risk') || s.includes('risiko')) return 'risk'; if(s.includes('aman') || s.includes('safe')) return 'safe'; return undefined; } function parseCSV(text){ const lines = text.split(/\r\n|\n|\r/).filter(l=>l.trim().length>0); if(lines.length < 2) throw new Error('Data tidak lengkap — pastikan ada baris header dan minimal satu baris data.'); const delim = detectDelimiter(lines[0]); const headerCells = splitLine(lines[0], delim).map(normalizeHeader); const colMap = mapColumns(headerCells); const required = ['tanggal','outlet','targetOmset','realOmset']; const missing = required.filter(k => colMap[k]===undefined); if(missing.length) throw new Error('Kolom wajib tidak ditemukan: ' + missing.join(', ') + '. Cek kembali nama header di baris pertama.'); const rows = []; for(let i=1;i<lines.length;i++){ const cells = splitLine(lines[i], delim); if(cells.every(c=>c.trim()==='')) continue; const get = key => colMap[key]!==undefined ? cells[colMap[key]] : undefined; const outlet = (get('outlet')||'').trim(); const tanggal = normalizeDateStr(get('tanggal')); if(!outlet || !tanggal) continue; rows.push({ tanggal, outlet, targetOmset: parseNum(get('targetOmset')), realOmset: parseNum(get('realOmset')), targetBasket: parseNum(get('targetBasket')), realBasket: parseNum(get('realBasket')), targetOgura: parseNum(get('targetOgura')), realOgura: parseNum(get('realOgura')), targetBundling: parseNum(get('targetBundling')), realBundling: parseNum(get('realBundling')), targetMember: parseNum(get('targetMember')), realMember: parseNum(get('realMember')), statusRaw: (get('status')||'').trim(), areaRaw: (get('area')||'').trim(), }); } if(rows.length===0) throw new Error('Tidak ada baris data valid yang bisa dibaca dari file ini.'); return rows; } function rebuildFromRows(rows){ const byDate = {}; const outletSet = new Set(); const newOutletArea = {}; let hasAreaColumn = false; rows.forEach(r=>{ outletSet.add(r.outlet); if(r.areaRaw){ hasAreaColumn = true; newOutletArea[r.outlet] = r.areaRaw; } if(!byDate[r.tanggal]) byDate[r.tanggal] = []; byDate[r.tanggal].push({ outlet:r.outlet, targetOmset:r.targetOmset, realOmset:r.realOmset, targetBasket:r.targetBasket, realBasket:r.realBasket, targetOgura:r.targetOgura, realOgura:r.realOgura, targetBundling:r.targetBundling, realBundling:r.realBundling, targetMember:r.targetMember, realMember:r.realMember, statusOverride: mapStatusRaw(r.statusRaw), }); }); DATES = Object.keys(byDate).sort(); OUTLETS = Array.from(outletSet).sort((a,b)=>a.localeCompare(b,'id')); DATA = byDate; if(hasAreaColumn){ OUTLET_AREA = newOutletArea; } state.dateStart = DATES[0]; state.dateEnd = DATES[DATES.length-1]; state.area = 'ALL'; state.outlet = 'ALL'; updateDateButtons(); fillAreaSelect(); fillOutletSelect(); render(); return {rowCount: rows.length, dateCount: DATES.length, outletCount: OUTLETS.length}; } function setSyncStatus(mode, text){ const dot = document.getElementById('syncDot'); const label = document.getElementById('syncText'); dot.className = 'sync-dot ' + mode; label.textContent = text; } function timeNow(){ return new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}); } async function syncFromSpreadsheet(){ if(!SPREADSHEET_CSV_URL || SPREADSHEET_CSV_URL.includes('PASTE_LINK_CSV_KAMU')){ setSyncStatus('err', 'Link CSV belum diatur — lihat komentar SPREADSHEET_CSV_URL di kode.'); render(); return; } setSyncStatus('loading', 'Menyinkronkan data…'); try{ const res = await fetch(SPREADSHEET_CSV_URL, {cache:'no-store'}); if(!res.ok) throw new Error('Server merespons status ' + res.status); const text = await res.text(); const rows = parseCSV(text); const info = rebuildFromRows(rows); setSyncStatus('ok', `Tersinkron · ${info.outletCount} outlet · ${info.dateCount} tanggal · pukul ${timeNow()}`); }catch(e){ setSyncStatus('err', 'Gagal sinkron (' + e.message + ') · menampilkan data terakhir · pukul ' + timeNow()); } } render(); syncFromSpreadsheet(); setInterval(syncFromSpreadsheet, REFRESH_INTERVAL_MS); </script>
+
+</body> </html>
+
+Close
