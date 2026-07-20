@@ -698,13 +698,15 @@ function render(){
 function renderHero(rows){
 const monthRows = currentMonthRows();
 
-let target, real, label, row=null;
+let target, real, label, row = null;
 
 if(state.outlet==="ALL"){
 
-    target = monthRows.reduce((s,r)=>s+r.targetOmset,0);   // target sebulan
+    // Target mengikuti filter tanggal
+    target = rows.reduce((s,r)=>s+r.targetOmset,0);
 
-    real = rows.reduce((s,r)=>s+r.realOmset,0);            // realisasi sampai tanggal dipilih
+    // Realisasi mengikuti filter tanggal
+    real = rows.reduce((s,r)=>s+r.realOmset,0);
 
     label = "Semua outlet (" + rows.length + ") · " + periodLabel();
 
@@ -712,9 +714,7 @@ if(state.outlet==="ALL"){
 
     row = rows.find(r=>r.outlet===state.outlet);
 
-    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
-
-    target = monthRow ? monthRow.targetOmset : 0;
+    target = row ? row.targetOmset : 0;
 
     real = row ? row.realOmset : 0;
 
