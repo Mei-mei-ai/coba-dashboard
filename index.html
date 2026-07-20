@@ -644,7 +644,15 @@ function currentRows(){
     (DATA[d]||[]).forEach(r=>{
       const s = acc[r.outlet];
       if(!s) return;
-      SUM_FIELDS.forEach(f=> s[f] += (r[f]||0));
+SUM_FIELDS.forEach(f=>{
+
+    if(f==="targetOmset"){
+        s[f]=r[f]||0;
+    }else{
+        s[f]+=r[f]||0;
+    }
+
+});
       AVG_FIELDS.forEach(f=> s[f] += (r[f]||0));
       s._days++;
     });
@@ -671,9 +679,15 @@ function currentMonthRows(){
 
     (DATA[date]||[]).forEach(r=>{
       const s = acc[r.outlet];
-      SUM_FIELDS.forEach(f=>{
+SUM_FIELDS.forEach(f=>{
+
+    if(f==="targetOmset"){
+        s[f] = r[f] || 0;
+    }else{
         s[f] += (r[f] || 0);
-      });
+    }
+
+});
     });
   });
 
@@ -782,7 +796,7 @@ function renderStatusBoard(rows){
   board.innerHTML='';
   const groups = {safe:[], risk:[], unsafe:[]};
   rows.forEach(r=>{
-    const p = pct(r.realOmset, r.targetOmset);
+    const p = pct(r.realOmset,r.targetOmset);
     groups[getStatus(r,p).key].push({...r, pct:p});
   });
   Object.values(groups).forEach(g=>g.sort((a,b)=>b.pct-a.pct));
