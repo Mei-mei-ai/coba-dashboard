@@ -696,16 +696,31 @@ function render(){
 }
 
 function renderHero(rows){
-  let target, real, label, row=null;
-  if(state.outlet==="ALL"){
-    target = rows.reduce((s,r)=>s+r.targetOmset,0);
-    real = rows.reduce((s,r)=>s+r.realOmset,0);
+const monthRows = currentMonthRows();
+
+let target, real, label, row=null;
+
+if(state.outlet==="ALL"){
+
+    target = monthRows.reduce((s,r)=>s+r.targetOmset,0);   // target sebulan
+
+    real = rows.reduce((s,r)=>s+r.realOmset,0);            // realisasi sampai tanggal dipilih
+
     label = "Semua outlet (" + rows.length + ") · " + periodLabel();
-  } else {
+
+}else{
+
     row = rows.find(r=>r.outlet===state.outlet);
-    target = row ? row.targetOmset : 0; real = row ? row.realOmset : 0;
+
+    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
+
+    target = monthRow ? monthRow.targetOmset : 0;
+
+    real = row ? row.realOmset : 0;
+
     label = "Outlet " + state.outlet + " · " + periodLabel();
-  }
+
+}
 
   const p = pct(real,target);
   const st = getStatus(row,p);
