@@ -42,7 +42,6 @@
   .disp{font-family:'Barlow Condensed',sans-serif; letter-spacing:0.01em;}
   .mono{font-family:'IBM Plex Mono',monospace;}
 
-  /* ---------- Header ---------- */
   header.top{
     display:flex; align-items:flex-end; justify-content:space-between;
     flex-wrap:wrap; gap:16px;
@@ -78,7 +77,44 @@
   }
   select:focus{outline:2px solid var(--accent); outline-offset:1px;}
 
-  /* ---------- Layout ---------- */
+  .date-picker-wrap{position:relative;}
+  .date-btn{
+    appearance:none;
+    background:var(--surface) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7"><path d="M0 0L5 7L10 0Z" fill="%236B7280"/></svg>') no-repeat right 12px center;
+    border:1.5px solid var(--line-strong);
+    border-radius:9px;
+    padding:9px 34px 9px 13px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:13.5px; font-weight:600; color:var(--ink);
+    min-width:170px; cursor:pointer; text-align:left;
+  }
+  .date-btn:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .cal-popup{
+    position:absolute; top:calc(100% + 6px); left:0; z-index:80;
+    background:var(--surface); border:1px solid var(--line-strong); border-radius:12px;
+    box-shadow:0 10px 30px rgba(24,27,32,0.14);
+    padding:12px; width:250px; display:none;
+  }
+  .cal-popup.open{display:block;}
+  .cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .cal-header button{
+    background:none; border:none; cursor:pointer; font-size:16px; color:var(--ink-soft);
+    padding:3px 9px; border-radius:6px; font-weight:700;
+  }
+  .cal-header button:hover{background:var(--surface-alt); color:var(--ink);}
+  .cal-title{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px;}
+  .cal-dow{font-size:10px; color:var(--ink-faint); text-align:center; font-weight:700; padding:4px 0;}
+  .cal-day{
+    font-size:12px; text-align:center; padding:7px 0; border-radius:50%;
+    cursor:pointer; color:var(--ink);
+  }
+  .cal-day:hover{background:var(--accent-bg);}
+  .cal-day.disabled{color:var(--line-strong); cursor:not-allowed; pointer-events:none;}
+  .cal-day.other-month{color:var(--ink-faint); opacity:0.35; pointer-events:none;}
+  .cal-day.selected{background:var(--ink); color:#fff; font-weight:700;}
+  .cal-day.today:not(.selected){outline:1.5px solid var(--accent); outline-offset:-1.5px;}
+
   .grid-top{display:grid; grid-template-columns:1.15fr 1.4fr; gap:16px; margin-bottom:16px;}
   @media (max-width:980px){.grid-top{grid-template-columns:1fr;}}
   .card{
@@ -94,7 +130,6 @@
   }
   .card-head .sub{font-size:12px; color:var(--ink-soft);}
 
-  /* ---------- Hero gauge ---------- */
   .hero{display:flex; gap:22px; align-items:center;}
   .gauge-wrap{position:relative; width:196px; flex:none;}
   .gauge-num{
@@ -122,7 +157,6 @@
   .status-pill.unsafe{background:var(--unsafe-bg); color:var(--unsafe);}
   .status-pill .dot{width:7px; height:7px; border-radius:50%; background:currentColor;}
 
-  /* ---------- KPI mini cards ---------- */
   .kpi-mini-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
   @media (max-width:820px){.kpi-mini-row{grid-template-columns:repeat(2,1fr);}}
   .kpi-mini{
@@ -133,7 +167,6 @@
   .kpi-mini .val{font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:24px; margin-top:4px;}
   .kpi-mini .foot{font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
 
-  /* ---------- Status board ---------- */
   .status-board{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px;}
   @media (max-width:900px){.status-board{grid-template-columns:1fr;}}
   .status-col{
@@ -173,7 +206,6 @@
   }
   .outlet-row .rp-line{display:flex; justify-content:space-between; margin-top:5px; font-size:11px; color:var(--ink-soft);}
 
-  /* ---------- Ranking board ---------- */
   .rank-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px 20px;}
   .tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;}
   .tab{
@@ -214,45 +246,6 @@
 
   footer.note{margin-top:20px; font-size:11.5px; color:var(--ink-faint); text-align:center;}
 
-  /* ---------- Import panel ---------- */
-  .import-card{
-    background:var(--surface-alt); border:1.5px dashed var(--line-strong); border-radius:var(--radius);
-    padding:16px 20px; margin-bottom:18px;
-  }
-  .import-head{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; cursor:pointer;}
-  .import-head h2{font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:17px; margin:0;}
-  .import-head .sub{font-size:12px; color:var(--ink-soft);}
-  .import-toggle{font-size:12px; font-weight:600; color:var(--accent-ink);}
-  .import-body{margin-top:14px; display:none;}
-  .import-body.open{display:block;}
-  .import-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;}
-  textarea#csvPaste{
-    width:100%; min-height:90px; border:1.5px solid var(--line-strong); border-radius:9px;
-    padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; resize:vertical;
-    background:var(--surface);
-  }
-  .btn{
-    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:12.5px;
-    padding:9px 16px; border-radius:9px; border:1.5px solid var(--line-strong);
-    background:var(--surface); color:var(--ink); cursor:pointer;
-  }
-  .btn.primary{background:var(--ink); border-color:var(--ink); color:#fff;}
-  .btn.ghost{border-color:transparent; color:var(--accent-ink);}
-  .file-input-wrap{
-    display:inline-flex; align-items:center; gap:8px; border:1.5px solid var(--line-strong);
-    border-radius:9px; padding:8px 14px; background:var(--surface); font-size:12.5px; font-weight:600;
-    cursor:pointer;
-  }
-  .import-msg{font-size:12px; margin-top:8px; font-weight:600;}
-  .import-msg.ok{color:var(--safe);}
-  .import-msg.err{color:var(--unsafe);}
-  .col-hint{
-    font-size:11px; color:var(--ink-soft); background:var(--surface); border:1px solid var(--line);
-    border-radius:8px; padding:9px 12px; margin-top:8px; line-height:1.6;
-  }
-  .col-hint code{background:var(--accent-bg); color:var(--accent-ink); padding:1px 5px; border-radius:4px; font-family:'IBM Plex Mono',monospace;}
-
-  /* ---------- Sync status (pengganti panel import) ---------- */
   .sync-status{
     display:flex; align-items:center; gap:8px;
     font-size:12px; color:var(--ink-soft); margin-bottom:16px;
@@ -273,12 +266,18 @@
   </div>
   <div class="filters">
     <div class="field">
-      <label for="dateStartSel">Tanggal Mulai</label>
-      <select id="dateStartSel"></select>
+      <label for="dateStartBtn">Tanggal Mulai</label>
+      <div class="date-picker-wrap">
+        <button type="button" class="date-btn" id="dateStartBtn"></button>
+        <div class="cal-popup" id="calStart"></div>
+      </div>
     </div>
     <div class="field">
-      <label for="dateEndSel">Tanggal Selesai</label>
-      <select id="dateEndSel"></select>
+      <label for="dateEndBtn">Tanggal Selesai</label>
+      <div class="date-picker-wrap">
+        <button type="button" class="date-btn" id="dateEndBtn"></button>
+        <div class="cal-popup" id="calEnd"></div>
+      </div>
     </div>
     <div class="field">
       <label for="areaSel">Area</label>
@@ -357,7 +356,6 @@
 <footer class="note">Mockup konsep — seluruh angka adalah data dummy untuk ilustrasi tata letak, bukan data aktual.</footer>
 
 <script>
-/* ================= DATA DUMMY ================= */
 const AREA_MAP = {
   "Area 1": ["Nusa Indah","UMY","Godean","Tajem","Jakal UII","Merbabu","Rajawali","Magelang","Muntilan","Temanggung"],
   "Area 2": ["Makam Haji","UMS","Jebres","Laweyan","Nusukan","Boyolali","Karanganyar","Sukoharjo","Sragen"],
@@ -381,10 +379,9 @@ function mulberry32(seed){
   };
 }
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}return h;}
-
 function genFactor(rng, lo, hi){ return lo + rng()*(hi-lo); }
 
-let DATA = {}; // DATA[date] = [ {outlet, targetOmset, realOmset, ...}, ... ]
+let DATA = {};
 function buildDummyData(){
   const d = {};
   DATES.forEach(date=>{
@@ -416,7 +413,6 @@ const METRICS = {
   member:  {label:"Member",      unit:"org", t:"targetMember",   r:"realMember"},
 };
 
-/* ================= HELPERS ================= */
 const fmtRp = n => "Rp " + Math.round(n).toLocaleString('id-ID');
 const fmtNum = (n,unit) => unit==="rp" ? fmtRp(n) : Math.round(n).toLocaleString('id-ID')+" "+unit;
 const pct = (r,t) => t===0 ? 0 : (r/t*100);
@@ -431,48 +427,127 @@ function getStatus(row, p){
   return statusOf(p);
 }
 
-/* ================= STATE ================= */
 let state = {dateStart: DATES[0], dateEnd: DATES[DATES.length-1], area: "ALL", outlet: "ALL"};
 
-/* ================= POPULATE FILTERS ================= */
-const dateStartSel = document.getElementById('dateStartSel');
-const dateEndSel = document.getElementById('dateEndSel');
+/* ================= DATE PICKER (KALENDER CUSTOM) ================= */
+const dateStartBtn = document.getElementById('dateStartBtn');
+const dateEndBtn = document.getElementById('dateEndBtn');
+const calStartEl = document.getElementById('calStart');
+const calEndEl = document.getElementById('calEnd');
+
+let calStartView = new Date();
+let calEndView = new Date();
+
+const MONTH_NAMES = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const DOW_NAMES = ['M','S','S','R','K','J','S'];
+
+function ymd(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 
 function dateLabel(d){
   const dd = new Date(d);
   return isNaN(dd) ? d : dd.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 }
 
-function fillDateSelect(){
-  [dateStartSel, dateEndSel].forEach(sel=>{
-    sel.innerHTML = '';
-    DATES.forEach(d=>{
-      const opt = document.createElement('option');
-      opt.value = d;
-      opt.textContent = dateLabel(d);
-      sel.appendChild(opt);
-    });
-  });
-  dateStartSel.value = state.dateStart;
-  dateEndSel.value = state.dateEnd;
+function updateDateButtons(){
+  dateStartBtn.textContent = dateLabel(state.dateStart);
+  dateEndBtn.textContent = dateLabel(state.dateEnd);
 }
 
-dateStartSel.addEventListener('change', ()=>{
-  state.dateStart = dateStartSel.value;
-  if(state.dateStart > state.dateEnd){
-    state.dateEnd = state.dateStart;
-    dateEndSel.value = state.dateEnd;
+function renderCalendar(containerId, viewDate, selectedStr, onPick){
+  const container = document.getElementById(containerId);
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const todayStr = new Date().toISOString().slice(0,10);
+
+  let cells = '';
+  for(let i=0;i<startWeekday;i++){
+    const d = daysInPrevMonth - startWeekday + 1 + i;
+    cells += `<div class="cal-day other-month">${d}</div>`;
   }
-  render();
-});
-dateEndSel.addEventListener('change', ()=>{
-  state.dateEnd = dateEndSel.value;
-  if(state.dateEnd < state.dateStart){
-    state.dateStart = state.dateEnd;
-    dateStartSel.value = state.dateStart;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = ymd(year, month, d);
+    const exists = DATES.includes(dateStr);
+    let cls = 'cal-day';
+    if(!exists) cls += ' disabled';
+    if(dateStr === selectedStr) cls += ' selected';
+    if(dateStr === todayStr) cls += ' today';
+    cells += `<div class="${cls}" data-date="${dateStr}">${d}</div>`;
   }
-  render();
-});
+  const totalCells = startWeekday + daysInMonth;
+  const remainder = (7 - (totalCells % 7)) % 7;
+  for(let d=1; d<=remainder; d++){
+    cells += `<div class="cal-day other-month">${d}</div>`;
+  }
+
+  container.innerHTML = `
+    <div class="cal-header">
+      <button type="button" class="cal-prev">‹</button>
+      <span class="cal-title">${MONTH_NAMES[month]} ${year}</span>
+      <button type="button" class="cal-next">›</button>
+    </div>
+    <div class="cal-grid">
+      ${DOW_NAMES.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+      ${cells}
+    </div>
+  `;
+  container.querySelector('.cal-prev').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    viewDate.setMonth(viewDate.getMonth()-1);
+    renderCalendar(containerId, viewDate, selectedStr, onPick);
+  });
+  container.querySelector('.cal-next').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    viewDate.setMonth(viewDate.getMonth()+1);
+    renderCalendar(containerId, viewDate, selectedStr, onPick);
+  });
+  container.querySelectorAll('.cal-day[data-date]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      onPick(el.getAttribute('data-date'));
+    });
+  });
+}
+
+function closeAllCalendars(){
+  calStartEl.classList.remove('open');
+  calEndEl.classList.remove('open');
+}
+
+function openCalendar(which){
+  const wasOpen = (which==='start' ? calStartEl : calEndEl).classList.contains('open');
+  closeAllCalendars();
+  if(wasOpen) return;
+
+  if(which==='start'){
+    calStartView = new Date(state.dateStart);
+    renderCalendar('calStart', calStartView, state.dateStart, (picked)=>{
+      state.dateStart = picked;
+      if(state.dateStart > state.dateEnd) state.dateEnd = state.dateStart;
+      updateDateButtons();
+      closeAllCalendars();
+      render();
+    });
+    calStartEl.classList.add('open');
+  } else {
+    calEndView = new Date(state.dateEnd);
+    renderCalendar('calEnd', calEndView, state.dateEnd, (picked)=>{
+      state.dateEnd = picked;
+      if(state.dateEnd < state.dateStart) state.dateStart = state.dateEnd;
+      updateDateButtons();
+      closeAllCalendars();
+      render();
+    });
+    calEndEl.classList.add('open');
+  }
+}
+
+dateStartBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('start'); });
+dateEndBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openCalendar('end'); });
+document.addEventListener('click', closeAllCalendars);
 
 const areaSel = document.getElementById('areaSel');
 function fillAreaSelect(){
@@ -511,12 +586,11 @@ function fillOutletSelect(){
   if(state.outlet!=='ALL' && !filtered.includes(state.outlet)) state.outlet='ALL';
   outletSel.value = state.outlet;
 }
-fillDateSelect();
+updateDateButtons();
 fillAreaSelect();
 fillOutletSelect();
 outletSel.addEventListener('change', ()=>{state.outlet=outletSel.value; render();});
 
-/* ================= GAUGE (SVG semicircle) ================= */
 function drawGauge(p){
   const svg = document.getElementById('gaugeSvg');
   const cx=98, cy=104, r=84;
@@ -534,8 +608,7 @@ function drawGauge(p){
     const rad2 = (180-deg)*Math.PI/180;
     return [cx - rad*Math.cos(rad2), cy - rad*Math.sin(rad2)];
   }
-  const needleAngle = angle;
-  const needleTip = polar(needleAngle, r-14);
+  const needleTip = polar(angle, r-14);
 
   svg.innerHTML = `
     <path d="${arcPath(0,unsafeEnd,r)}" stroke="var(--unsafe-bg)" stroke-width="16" fill="none" stroke-linecap="butt"/>
@@ -547,7 +620,6 @@ function drawGauge(p){
   `;
 }
 
-/* ================= RENDER ================= */
 const SUM_FIELDS = ['targetOmset','realOmset','targetOgura','realOgura','targetBundling','realBundling','targetMember','realMember'];
 const AVG_FIELDS = ['targetBasket','realBasket'];
 
@@ -699,7 +771,6 @@ function renderStatusBoard(rows){
   });
 }
 
-/* ---------- Ranking ---------- */
 let activeMetric = 'omset';
 function renderTabs(){
   const tabs = document.getElementById('tabs');
@@ -722,7 +793,7 @@ function renderRanking(){
   const top5 = sorted.slice(0,5);
   const bottom5 = sorted.slice(-5).reverse();
 
-  const build = (list, containerId, dir)=>{
+  const build = (list, containerId)=>{
     const el = document.getElementById(containerId);
     el.innerHTML='';
     const maxP = Math.max(...list.map(x=>x.p), 1);
@@ -745,18 +816,12 @@ function renderRanking(){
       el.appendChild(item);
     });
   };
-  build(top5,'rankTop','top');
-  build(bottom5,'rankBottom','bottom');
+  build(top5,'rankTop');
+  build(bottom5,'rankBottom');
 }
 
-/* ================= SINKRONISASI OTOMATIS DARI GOOGLE SHEETS =================
-   1. Publish sheet-mu ke web sebagai CSV (File > Share > Publish to web > CSV)
-   2. Tempel link CSV publiknya di SPREADSHEET_CSV_URL di bawah ini
-   3. Dashboard akan otomatis fetch data itu saat dibuka, dan me-refresh sendiri
-      tiap REFRESH_INTERVAL_MS milidetik (default 5 menit)                     */
-
 const SPREADSHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbUN7PRimr1MSV21QsBZRC9kmBVS8pCdIhoXXON65EMbcUiAlu-PwpuHIctr34YPWTERXERZyq0A7a/pub?gid=0&single=true&output=csv";
-const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 menit — ubah sesuai kebutuhan
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 const ALIASES = {
   tanggal:      ['tanggal','date','tgl'],
@@ -828,7 +893,23 @@ function normalizeDateStr(str){
   str = String(str).trim();
   if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
   let m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if(m){ const [,d,mo,y] = m; return `${y}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}`; }
+  if(m){
+    const a = parseInt(m[1],10);
+    const b = parseInt(m[2],10);
+    const y = m[3];
+    let month, day;
+    if(a > 12 && b <= 12){
+      // bagian pertama pasti tanggal (karena bulan maksimal 12)
+      day = a; month = b;
+    } else if(b > 12 && a <= 12){
+      // bagian kedua pasti tanggal
+      month = a; day = b;
+    } else {
+      // ambigu (keduanya <=12) -> asumsikan MM/DD/YYYY sesuai format spreadsheet ini
+      month = a; day = b;
+    }
+    return `${y}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  }
   const dd = new Date(str);
   if(!isNaN(dd)) return dd.toISOString().slice(0,10);
   return str;
@@ -904,7 +985,7 @@ function rebuildFromRows(rows){
   state.dateEnd = DATES[DATES.length-1];
   state.area = 'ALL';
   state.outlet = 'ALL';
-  fillDateSelect();
+  updateDateButtons();
   fillAreaSelect();
   fillOutletSelect();
   render();
@@ -925,7 +1006,7 @@ function timeNow(){
 async function syncFromSpreadsheet(){
   if(!SPREADSHEET_CSV_URL || SPREADSHEET_CSV_URL.includes('PASTE_LINK_CSV_KAMU')){
     setSyncStatus('err', 'Link CSV belum diatur — lihat komentar SPREADSHEET_CSV_URL di kode.');
-    render(); // tetap tampilkan data dummy supaya tampilan tidak kosong
+    render();
     return;
   }
   setSyncStatus('loading', 'Menyinkronkan data…');
@@ -941,11 +1022,8 @@ async function syncFromSpreadsheet(){
   }
 }
 
-// Muat pertama kali saat halaman dibuka, lalu render dummy dulu sebagai fallback instan
 render();
 syncFromSpreadsheet();
-
-// Auto-refresh berkala tanpa perlu aksi apa pun dari pengguna
 setInterval(syncFromSpreadsheet, REFRESH_INTERVAL_MS);
 </script>
 </body>
