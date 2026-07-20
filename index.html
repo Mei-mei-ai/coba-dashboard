@@ -697,30 +697,40 @@ function render(){
 
 function renderHero(rows){
 const monthRows = currentMonthRows();
+  const range = datesInRange();
+
+const totalHariBulan = new Date(
+  Number(state.dateStart.slice(0,4)),
+  Number(state.dateStart.slice(5,7)),
+  0
+).getDate();
+
+const hariDipilih = range.length;
 console.log(rows);
-let target, real, label, row = null;
+let targetBulanan = 0;
 
 if(state.outlet==="ALL"){
 
-    // Target mengikuti filter tanggal
-    target = rows.reduce((s,r)=>s+r.targetOmset,0);
+    targetBulanan = monthRows.reduce((s,r)=>s+r.targetOmset,0);
 
-    // Realisasi mengikuti filter tanggal
+    target = targetBulanan / totalHariBulan * hariDipilih;
+
     real = rows.reduce((s,r)=>s+r.realOmset,0);
-
-    label = "Semua outlet (" + rows.length + ") · " + periodLabel();
 
 }else{
 
     row = rows.find(r=>r.outlet===state.outlet);
 
-    target = row ? row.targetOmset : 0;
+    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
+
+    targetBulanan = monthRow ? monthRow.targetOmset : 0;
+
+    target = targetBulanan / totalHariBulan * hariDipilih;
 
     real = row ? row.realOmset : 0;
 
-    label = "Outlet " + state.outlet + " · " + periodLabel();
-
 }
+  const sisa = Math.max(0,targetBulanan-real);
 
   const p = pct(real,target);
   const st = getStatus(row,p);
@@ -731,17 +741,6 @@ if(state.outlet==="ALL"){
 
   document.getElementById('stTarget').textContent = fmtRp(target);
   document.getElementById('stReal').textContent = fmtRp(real);
-
-let targetBulanan;
-
-if(state.outlet==="ALL"){
-    targetBulanan = monthRows.reduce((s,r)=>s+r.targetOmset,0);
-}else{
-    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
-    targetBulanan = monthRow ? monthRow.targetOmset : 0;
-}
-
-const sisa = Math.max(0, targetBulanan - real);
 
   document.getElementById('stSisa').textContent =
       sisa>0 ? fmtRp(sisa) : "Tercapai";
