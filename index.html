@@ -696,34 +696,15 @@ function render(){
 }
 
 function renderHero(rows){
-
-  const monthRows = currentMonthRows();
-
-  let target = 0;
-  let real = 0;
-  let label = "";
-  let row = null;
-
+  let target, real, label, row=null;
   if(state.outlet==="ALL"){
-
-    target = monthRows.reduce((s,r)=>s+r.targetOmset,0);
-
+    target = rows.reduce((s,r)=>s+r.targetOmset,0);
     real = rows.reduce((s,r)=>s+r.realOmset,0);
-
-    label = "Semua outlet ("+rows.length+") · "+periodLabel();
-
-  }else{
-
-    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
-
+    label = "Semua outlet (" + rows.length + ") · " + periodLabel();
+  } else {
     row = rows.find(r=>r.outlet===state.outlet);
-
-    target = monthRow ? monthRow.targetOmset : 0;
-
-    real = row ? row.realOmset : 0;
-
-    label = "Outlet "+state.outlet+" · "+periodLabel();
-
+    target = row ? row.targetOmset : 0; real = row ? row.realOmset : 0;
+    label = "Outlet " + state.outlet + " · " + periodLabel();
   }
 
   const p = pct(real,target);
