@@ -732,7 +732,16 @@ if(state.outlet==="ALL"){
   document.getElementById('stTarget').textContent = fmtRp(target);
   document.getElementById('stReal').textContent = fmtRp(real);
 
-  const sisa = Math.max(0,target-real);
+let targetBulanan;
+
+if(state.outlet==="ALL"){
+    targetBulanan = monthRows.reduce((s,r)=>s+r.targetOmset,0);
+}else{
+    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
+    targetBulanan = monthRow ? monthRow.targetOmset : 0;
+}
+
+const sisa = Math.max(0, targetBulanan - real);
 
   document.getElementById('stSisa').textContent =
       sisa>0 ? fmtRp(sisa) : "Tercapai";
