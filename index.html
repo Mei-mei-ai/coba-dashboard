@@ -655,6 +655,31 @@ function currentRows(){
   });
 }
 
+function currentMonthRows(){
+  const month = state.dateStart.slice(0,7); // contoh: 2026-07
+
+  const acc = {};
+
+  OUTLETS.forEach(o=>{
+    const base = {outlet:o};
+    SUM_FIELDS.forEach(f=> base[f]=0);
+    acc[o]=base;
+  });
+
+  Object.keys(DATA).forEach(date=>{
+    if(!date.startsWith(month)) return;
+
+    (DATA[date]||[]).forEach(r=>{
+      const s = acc[r.outlet];
+      SUM_FIELDS.forEach(f=>{
+        s[f] += (r[f] || 0);
+      });
+    });
+  });
+
+  return Object.values(acc);
+}
+  
 function periodLabel(){
   const range = datesInRange();
   if(range.length===0) return "Tidak ada data pada rentang ini";
@@ -671,31 +696,61 @@ function render(){
 }
 
 function renderHero(rows){
-  let target, real, label, row=null;
+
+  const monthRows = currentMonthRows();
+
+  let target = 0;
+  let real = 0;
+  let label = "";
+  let row = null;
+
   if(state.outlet==="ALL"){
-    target = rows.reduce((s,r)=>s+r.targetOmset,0);
+
+    target = monthRows.reduce((s,r)=>s+r.targetOmset,0);
+
     real = rows.reduce((s,r)=>s+r.realOmset,0);
-    label = "Semua outlet (" + rows.length + ") · " + periodLabel();
-  } else {
+
+    label = "Semua outlet ("+rows.length+") · "+periodLabel();
+
+  }else{
+
+    const monthRow = monthRows.find(r=>r.outlet===state.outlet);
+
     row = rows.find(r=>r.outlet===state.outlet);
-    target = row ? row.targetOmset : 0; real = row ? row.realOmset : 0;
-    label = "Outlet " + state.outlet + " · " + periodLabel();
+
+    target = monthRow ? monthRow.targetOmset : 0;
+
+    real = row ? row.realOmset : 0;
+
+    label = "Outlet "+state.outlet+" · "+periodLabel();
+
   }
+
   const p = pct(real,target);
-  const st = getStatus(row, p);
+  const st = getStatus(row,p);
+
   document.getElementById('heroSub').textContent = label;
   document.getElementById('gaugePct').textContent = p.toFixed(1)+"%";
   document.getElementById('gaugePct').style.color = `var(--${st.key})`;
+
   document.getElementById('stTarget').textContent = fmtRp(target);
   document.getElementById('stReal').textContent = fmtRp(real);
-  const sisa = Math.max(0, target-real);
-  document.getElementById('stSisa').textContent = sisa>0 ? fmtRp(sisa) : "Tercapai";
-  document.getElementById('stSisa').className = "v " + (sisa>0 ? "neg" : "pos");
+
+  const sisa = Math.max(0,target-real);
+
+  document.getElementById('stSisa').textContent =
+      sisa>0 ? fmtRp(sisa) : "Tercapai";
+
+  document.getElementById('stSisa').className =
+      "v "+(sisa>0?"neg":"pos");
+
   document.getElementById('stStatus').innerHTML =
-    `<span class="status-pill ${st.key}"><span class="dot"></span>${st.label}</span>`;
+      `<span class="status-pill ${st.key}">
+          <span class="dot"></span>${st.label}
+      </span>`;
+
   drawGauge(p);
 }
-
 function renderMiniKpis(rows){
   const wrap = document.getElementById('miniKpis');
   wrap.innerHTML='';
